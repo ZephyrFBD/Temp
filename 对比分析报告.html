@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三校本科留学对比分析 — TU Delft / 爱丁堡 / 曼彻斯特</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --delft: #00A1E4;
+  --delft-light: #e8f7ff;
+  --edinburgh: #041E42;
+  --edinburgh-light: #e6eaf0;
+  --manchester: #6C1D45;
+  --manchester-light: #f5e8ef;
+  --bg: #f0f4f8;
+  --card: rgba(255,255,255,0.92);
+  --text: #1a2332;
+  --muted: #5a6a7a;
+  --border: #e2e8f0;
+  --shadow: 0 8px 32px rgba(0,0,0,0.06);
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+/* Nav */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0; width: 260px;
+  background: linear-gradient(180deg, #0f1a2e 0%, #1a2a44 100%);
+  color: #fff; z-index: 100; overflow-y: auto; padding: 20px 0;
+  transition: transform 0.3s ease;
+}
+.sidebar h2 { font-size: 14px; padding: 0 20px 12px; opacity: 0.6; letter-spacing: 1px; text-transform: uppercase; }
+.sidebar a {
+  display: block; padding: 8px 20px; color: rgba(255,255,255,0.7); text-decoration: none;
+  font-size: 14px; transition: all 0.15s; border-left: 3px solid transparent;
+}
+.sidebar a:hover, .sidebar a.active { color: #fff; background: rgba(255,255,255,0.06); border-left-color: var(--delft); }
+.main { margin-left: 260px; padding: 0; }
+.menu-toggle { display: none; position: fixed; top: 12px; left: 12px; z-index: 200; background: var(--card); border: none; border-radius: 8px; padding: 8px 12px; font-size: 20px; cursor: pointer; box-shadow: var(--shadow); }
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #0f1a2e 0%, #1a2a44 50%, #2a3a5a 100%);
+  color: #fff; padding: 80px 60px 60px; text-align: center; position: relative; overflow: hidden;
+}
+.hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); opacity: 0.4; }
+.hero h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.5px; }
+.hero p { font-size: 16px; opacity: 0.7; margin-top: 10px; max-width: 640px; margin-inline: auto; }
+.hero .badge-group { margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.hero .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.1); backdrop-filter: blur(4px); }
+.hero .badge .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+/* Section */
+.section { max-width: 1200px; margin: 0 auto; padding: 48px 60px; }
+.section-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 12px; }
+.section-title .num { font-size: 14px; color: #fff; background: var(--delft); width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
+.section-desc { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+/* Cards row */
+.card-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+.col-tu .card-header { border-left: 4px solid var(--delft); }
+.col-ed .card-header { border-left: 4px solid var(--edinburgh); }
+.col-man .card-header { border-left: 4px solid var(--manchester); }
+
+/* Card */
+.card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; backdrop-filter: blur(8px); transition: transform 0.15s; }
+.card:hover { transform: translateY(-2px); }
+.card-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+.card-header h3 { font-size: 16px; font-weight: 700; }
+.card-header .icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.card-body { padding: 16px 20px 20px; font-size: 14px; line-height: 1.8; }
+.card-body ul { list-style: none; padding: 0; }
+.card-body li { padding: 4px 0; padding-left: 16px; position: relative; }
+.card-body li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+.card-body li strong { font-weight: 600; }
+.card-body .tag { display: inline-block; padding: 1px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.tag-green { background: #d4edda; color: #155724; }
+.tag-yellow { background: #fff3cd; color: #856404; }
+.tag-red { background: #f8d7da; color: #721c24; }
+.tag-blue { background: #d1ecf1; color: #0c5460; }
+
+/* Full-width table card */
+.table-card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; margin-bottom: 20px; }
+.table-card .card-body { padding: 0; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead th { background: #f8fafc; padding: 14px 16px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border); position: sticky; top: 0; }
+thead th:first-child { min-width: 160px; }
+thead th:nth-child(2) { color: var(--delft); }
+thead th:nth-child(3) { color: var(--edinburgh); }
+thead th:nth-child(4) { color: var(--manchester); }
+tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #f8fafc; }
+td:first-child { font-weight: 600; color: var(--muted); }
+
+/* Charts */
+.chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-bottom: 24px; }
+.chart-card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 20px; }
+.chart-card h4 { font-size: 14px; color: var(--muted); margin-bottom: 12px; text-align: center; }
+.chart-wrap { position: relative; height: 240px; }
+
+/* Compare summary row */
+.compare-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.compare-box { border-radius: 16px; padding: 24px; text-align: center; }
+.compare-box h4 { font-size: 15px; margin-bottom: 8px; }
+.compare-box .big-num { font-size: 42px; font-weight: 800; line-height: 1.2; }
+.compare-box .label { font-size: 13px; opacity: 0.7; }
+.bg-delft { background: linear-gradient(135deg, #00A1E4, #0077B6); color: #fff; }
+.bg-edinburgh { background: linear-gradient(135deg, #041E42, #1a3a6a); color: #fff; }
+.bg-manchester { background: linear-gradient(135deg, #6C1D45, #8a2a5a); color: #fff; }
+
+/* Safety warning */
+.warning-box { background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px; padding: 14px 18px; margin-top: 12px; font-size: 13px; color: #6d5200; }
+
+/* Footer */
+.footer { text-align: center; padding: 40px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 20px; }
+
+/* Legend for charts */
+.legend { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 8px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.legend-item .swatch { width: 12px; height: 12px; border-radius: 3px; }
+
+/* Responsive */
+@media (max-width: 860px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .menu-toggle { display: block; }
+  .hero { padding: 60px 24px 40px; }
+  .hero h1 { font-size: 26px; }
+  .section { padding: 32px 20px; }
+  .card-row, .compare-row { grid-template-columns: 1fr; }
+  .chart-grid { grid-template-columns: 1fr; }
+}
+
+/* Animations */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+.section { animation: fadeUp 0.6s ease; }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div style="padding:0 20px 16px;"><strong style="font-size:16px;">📊 对比分析</strong></div>
+  <h2>基础信息</h2>
+  <a href="#s1" onclick="closeSidebar()">01 · 学校排名与专业实力</a>
+  <a href="#s2" onclick="closeSidebar()">02 · 学术声誉</a>
+  <a href="#s3" onclick="closeSidebar()">03 · 课程设置</a>
+  <h2>中国学生</h2>
+  <a href="#s4" onclick="closeSidebar()">04 · 中国学生比例</a>
+  <a href="#s5" onclick="closeSidebar()">05 · 学生会/社团</a>
+  <a href="#s6" onclick="closeSidebar()">06 · 中文服务</a>
+  <h2>生活环境</h2>
+  <a href="#s7" onclick="closeSidebar()">07 · 语言要求</a>
+  <a href="#s8" onclick="closeSidebar()">08 · 地理位置</a>
+  <a href="#s9" onclick="closeSidebar()">09 · 气候环境</a>
+  <h2>签证与安全</h2>
+  <a href="#s10" onclick="closeSidebar()">10 · 签证难度</a>
+  <a href="#s11" onclick="closeSidebar()">11 · 安全形势与歧视</a>
+  <a href="#s12" onclick="closeSidebar()">12 · 毕业工签</a>
+  <h2>成本与回报</h2>
+  <a href="#s13" onclick="closeSidebar()">13 · 学费与生活费</a>
+  <a href="#s14" onclick="closeSidebar()">14 · 奖学金机会</a>
+  <a href="#s15" onclick="closeSidebar()">15 · 就业前景</a>
+  <a href="#s16" onclick="closeSidebar()">16 · 回国就业情况</a>
+  <h2>实际体验</h2>
+  <a href="#s17" onclick="closeSidebar()">17 · 校友反馈</a>
+  <a href="#s18" onclick="closeSidebar()">18 · 中介口碑</a>
+</nav>
+
+<!-- Main -->
+<div class="main">
+
+<!-- Hero -->
+<div class="hero">
+  <h1>✈️ 三校本科留学对比分析</h1>
+  <p>TU Delft 航空航天工程 · 爱丁堡大学 EE · 曼彻斯特大学 EE — 按17个维度逐项对比</p>
+  <div class="badge-group">
+    <span class="badge"><span class="dot" style="background:var(--delft)"></span>TU Delft</span>
+    <span class="badge"><span class="dot" style="background:var(--edinburgh)"></span>爱丁堡大学</span>
+    <span class="badge"><span class="dot" style="background:var(--manchester)"></span>曼彻斯特大学</span>
+  </div>
+</div>
+
+<!-- ====== SUMMARY OVERVIEW ====== -->
+<div class="section">
+  <div class="section-title"><span class="num">★</span> 综合速览</div>
+  <div class="section-desc">三校关键指标一图对比</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h4>QS排名对比（数值越小越好）</h4>
+      <div class="chart-wrap"><canvas id="chartRank"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h4>年总费用对比（人民币/年）</h4>
+      <div class="chart-wrap"><canvas id="chartCost"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h4>毕业后薪资对比</h4>
+      <div class="chart-wrap"><canvas id="chartSalary"></canvas></div>
+    </div>
+  </div>
+  <div class="compare-row">
+    <div class="compare-box bg-delft">
+      <h4>🇳🇱 TU Delft</h4>
+      <div class="big-num">#49</div>
+      <div class="label">QS 综合排名</div>
+      <div style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.2);padding-top:8px;">
+        <div>✈️ 航空航天全球第14 · 3年制</div>
+        <div>€19,906/年学费 · 90%+就业率</div>
+        <div style="font-size:12px;opacity:0.75;">⚠️ 税后到手≈€2,100-2,500/月（税负高）</div>
+      </div>
+    </div>
+    <div class="compare-box bg-edinburgh">
+      <h4>🏴󠁧󠁢󠁳󠁣󠁴󠁿 爱丁堡大学</h4>
+      <div class="big-num">#27</div>
+      <div class="label">QS 综合排名</div>
+      <div style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.2);padding-top:8px;">
+        <div>⚡ EE全球第55 · 4年制</div>
+        <div>£36,800/年学费 · 99.1%就业率</div>
+        <div style="font-size:12px;opacity:0.75;">税后到手≈£2,200-2,500/月</div>
+      </div>
+    </div>
+    <div class="compare-box bg-manchester">
+      <h4>🏴󠁧󠁢󠁥󠁮󠁧󠁿 曼彻斯特大学</h4>
+      <div class="big-num">#34</div>
+      <div class="label">QS 综合排名</div>
+      <div style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.2);padding-top:8px;">
+        <div>⚡ EE全球第35 · 3年制</div>
+        <div>£32,000/年学费 · 雇主青睐第1</div>
+        <div style="font-size:12px;opacity:0.75;">税后到手≈£2,200-2,500/月</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 1 ====== -->
+<div class="section" id="s1">
+  <div class="section-title"><span class="num">01</span> 学校排名与专业实力</div>
+  <div class="section-desc">综合排名 + 目标专业排名</div>
+  <div class="table-card">
+    <div class="card-body">
+      <table>
+        <thead><tr><th>对比项</th><th>TU Delft (航空航天)</th><th>爱丁堡大学 (EE)</th><th>曼彻斯特大学 (EE)</th></tr></thead>
+        <tbody>
+          <tr><td>QS 综合排名 (2025)</td><td>第49名</td><td>约第27名</td><td>第34名</td></tr>
+          <tr><td>QS 综合排名 (2026)</td><td>第47名 ↑</td><td>—</td><td>—</td></tr>
+          <tr><td>THE 排名</td><td>第56名</td><td>—</td><td>第53名</td></tr>
+          <tr><td>U.S. News</td><td>—</td><td>—</td><td>第67名</td></tr>
+          <tr><td>专业 QS 排名</td><td>航空航天全球第14 (荷兰第1)</td><td>电气电子全球约53-55 (英国第6)</td><td>电气电子全球第35 (英国第4)</td></tr>
+          <tr><td>THE 工程排名</td><td>全球第13</td><td>—</td><td>—</td></tr>
+          <tr><td>其他排名</td><td>欧洲顶尖航空航天院系</td><td>卫报2026全英第1 (满分100)</td><td>雇主青睐第1 (THE Market 2023)</td></tr>
+          <tr><td>特点</td><td>与NASA/ESA/空客/波音合作<br>每年仅440个名额 (numerus clausus)</td><td>英国首个EEE人工智能方向<br>与Amazon AI合作</td><td>欧洲最大EEE学院之一<br>与华为/西门子共建研发中心</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 2 ====== -->
+<div class="section" id="s2">
+  <div class="section-title"><span class="num">02</span> 学术声誉</div>
+  <div class="section-desc">教授水平 · 研究资源 · 学术氛围</div>
+  <div class="card-row">
+    <div class="card col-tu">
+      <div class="card-header"><div class="icon" style="background:var(--delft-light)">✈️</div><h3>TU Delft</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;margin-bottom:4px;">教授水平</div>
+        <ul><li>被称为「欧洲麻省理工」，工程领域全球顶尖</li><li>教授多来自NASA、ESA、空客</li><li>空气动力学、航天系统学术认可度极高</li></ul>
+        <div style="font-weight:600;margin:10px 0 4px;">研究资源</div>
+        <ul><li>六自由度飞行模拟器SIMONA</li><li>Cessna Citation II飞行教室</li><li>亚音速/超音速/高超音速风洞</li><li>卫星地面站、无尘室</li></ul>
+        <div style="font-weight:600;margin:10px 0 4px;">学术氛围</div>
+        <ul><li>「欧洲衡水中学」— 学业压力极大</li><li>考试及格率≈50%，准时毕业率≈25%</li><li>国际学生占比50%</li></ul>
+      </div>
+    </div>
+    <div class="card col-ed">
+      <div class="card-header"><div class="icon" style="background:var(--edinburgh-light)">⚡</div><h3>爱丁堡大学</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;margin-bottom:4px;">教授水平</div>
+        <ul><li>罗素集团，英语世界第六古老大学</li><li>卫报2026 EEE全英第1（满分100）</li><li>英国首个EEE人工智能方向</li></ul>
+        <div style="font-weight:600;margin:10px 0 4px;">研究资源</div>
+        <ul><li>尖端电子实验室（行业标准软硬件）</li><li>工业联络委员会，与业界同步</li><li>IET认证 — 可申请特许工程师CEng</li></ul>
+        <div style="font-weight:600;margin:10px 0 4px;">学术氛围</div>
+        <ul><li>「爱丁堡衡水大学」— 论文量大</li><li>主图凌晨三点人满为患</li><li>满意度82/100 (NSS 2023)</li></ul>
+      </div>
+    </div>
+    <div class="card col-man">
+      <div class="card-header"><div class="icon" style="background:var(--manchester-light)">⚡</div><h3>曼彻斯特大学</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;margin-bottom:4px;">教授水平</div>
+        <ul><li>罗素集团创始成员，红砖大学</li><li>1905年起教授该学科</li><li>雇主青睐第1（THE Graduate Market 2023）</li></ul>
+        <div style="font-weight:600;margin:10px 0 4px;">研究资源</div>
+        <ul><li>欧洲最大高压测试中心HVRC</li><li>与华为/西门子/AWS/NVIDIA合作</li><li>可选带薪工业实习年</li></ul>
+        <div style="font-weight:600;margin:10px 0 4px;">学术氛围</div>
+        <ul><li>校友评价两极分化</li><li>正面：排名高、就业好</li><li>负面：课程松散、氛围冷淡</li><li>课程满意度约72%-76%</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 3 ====== -->
+<div class="section" id="s3">
+  <div class="section-title"><span class="num">03</span> 课程设置</div>
+  <div class="section-desc">学制 · 核心课程 · 适合中国学生程度</div>
+  <div class="table-card">
+    <div class="card-body">
+      <table>
+        <thead><tr><th>对比项</th><th>TU Delft (航空航天)</th><th>爱丁堡大学 (EE)</th><th>曼彻斯特大学 (EE)</th></tr></thead>
+        <tbody>
+          <tr><td>学制</td><td>3年 (180 ECTS)</td><td>4年</td><td>3年 (可选4年带薪实习)</td></tr>
+          <tr><td>学年结构</td><td>4个教学期/年 (Quarter制)<br>每期10周：7教学+1备考+2考试</td><td>标准学期制</td><td>标准学期制</td></tr>
+          <tr><td>授课语言</td><td>全英文</td><td>全英文</td><td>全英文</td></tr>
+          <tr><td>课程方向</td><td>航空航天设计27% · 工程与技术30%<br>基础科学26% · 辅修17%</td><td>三大流：电子学 · 信息科学 · 电力学</td><td>通信 · 信号与控制 · 电力能源<br>系统计算 · 数值分析</td></tr>
+          <tr><td>第一年<br>(核心课程)</td><td>微积分I&II · 线性代数 · 物理<br>工程力学 · Python编程<br>航空航天导论 · 材料与结构<br>⚠️ 需≥45/60 ECTS 才能续读</td><td>工程设计 · 工程数学1a/1b<br>工程原理 · 全校选修课40学分</td><td>微控制器I · 电路分析 · 数字设计I<br>电子材料 · 电磁场 · 能量传输<br>C程序设计 · 数学1E1/1E2</td></tr>
+          <tr><td>第二年</td><td>空气动力学 · 飞行与轨道力学<br>结构与振动 · 信号系统与控制<br>数值分析 · ✈️ Cessna飞行教室</td><td>模拟电路2 · 数字设计2<br>微电子学2 · 电力工程2<br>传感器网络 · 嵌入式C语言</td><td>微控制器II · 电力电子 · 数字设计II<br>信号与系统 · 发电与输电<br>控制系统 · 模拟数字通信</td></tr>
+          <tr><td>第三/四年</td><td>辅修 (海上风能/机场开发/交换)<br>毕业项目DSE：9人组队，工业界真实需求<br>范围：从设计飞机到火星卫星任务</td><td>模拟电路3 · FPGA/HDL<br>控制工程 · 小组设计项目<br>第4年：个人毕业项目+方向细化</td><td>个人毕业项目 · 商业技术开发<br>选修：移动通信/DSP/电力系统/计算机架构<br>可选工业实习年</td></tr>
+          <tr><td>适合中国学生</td><td>数理基础扎实者 · 需极强自驱力<br>Quarter制节奏快 · 抗压能力要求高</td><td>4年制有利于逐步适应<br>跨学科选课空间大 · 节奏适中</td><td>3年制紧凑高效 · 目标明确者<br>可选实习年 · 基础扎实</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 4 ====== -->
+<div class="section" id="s4">
+  <div class="section-title"><span class="num">04</span> 中国学生比例</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h4>中国学生数量对比</h4>
+      <div class="chart-wrap"><canvas id="chartChinese"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h4>占全校比例</h4>
+      <div class="chart-wrap"><canvas id="chartChinesePct"></canvas></div>
+    </div>
+  </div>
+  <div class="table-card">
+    <div class="card-body">
+      <table>
+        <thead><tr><th>对比项</th><th>TU Delft</th><th>爱丁堡大学</th><th>曼彻斯特大学</th></tr></thead>
+        <tbody>
+          <tr><td>中国学生总数</td><td>约 400~1,200 人</td><td>超过 3,000 人</td><td>约 6,870~9,185 人</td></tr>
+          <tr><td>占全校比例</td><td>国际生的15%-20%<br>(全校国际生40%)</td><td>约 8%<br>(全校15,000国际生)</td><td>约 12%<br>(全校4万人)</td></tr>
+          <tr><td>华人社区规模</td><td>较小 — 适中</td><td>适中</td><td>全英第2 (仅次于UCL)</td></tr>
+          <tr><td>综合评价</td><td>比例适中，不影响语言融入<br>也不乏同胞支持</td><td>比例健康，既能找到同胞<br>又保持英语环境</td><td>「留英大本营」<br>生活便利但需主动跳出舒适圈</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 5 ====== -->
+<div class="section" id="s5">
+  <div class="section-title"><span class="num">05</span> 中国学生会/社团</div>
+  <div class="card-row">
+    <div class="card col-tu">
+      <div class="card-header"><div class="icon" style="background:var(--delft-light)">🏛️</div><h3>TU Delft</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;">ACSSNL-Delft</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">全荷中国学生学者联合会代尔夫特分会</div>
+        <ul>
+          <li>1980年代末成立 — 荷兰最早的中协之一</li>
+          <li>33名核心成员，服务全校上千中国学生</li>
+          <li>迎新说明会 (找房、办银行卡)</li>
+          <li>春节联欢晚会 (€6,000规模)</li>
+          <li>职业招聘会 · 学术就业展</li>
+          <li>与乌特勒支、莱顿大学联合联谊</li>
+          <li>2023年春晚1/3观众非中国籍</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card col-ed">
+      <div class="card-header"><div class="icon" style="background:var(--edinburgh-light)">🏛️</div><h3>爱丁堡大学</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;">EUCSSA</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">爱丁堡大学中国学生学者联谊会</div>
+        <ul>
+          <li>全校最大的学生社团之一</li>
+          <li>服务全校3,000+中国学生</li>
+          <li>体育竞赛 · 节日庆祝</li>
+          <li>机场接机服务 (微信群协调)</li>
+          <li>新生欢迎活动 · 文化节</li>
+          <li>学术讲座</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card col-man">
+      <div class="card-header"><div class="icon" style="background:var(--manchester-light)">🏛️</div><h3>曼彻斯特大学</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;">MUCCIS + CSSA</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">全英最大的中国学生社团之一</div>
+        <ul>
+          <li>MUCCIS 2008年成立，微信关注10,000+</li>
+          <li>下设6部门：人力/体育/外联/活动/宣传/IT</li>
+          <li>运动竞技 (每周羽毛球/足球/篮球)</li>
+          <li>🎤 MANCHESTER IDOL 华人歌曲大奖赛</li>
+          <li>粤语班/国语班 (面向中外学生)</li>
+          <li>CSSA学联：全英最大最活跃之一</li>
+          <li>义工服务 (狮子会/华人商会)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 6 ====== -->
+<div class="section" id="s6">
+  <div class="section-title"><span class="num">06</span> 中文服务</div>
+  <div class="table-card">
+    <div class="card-body">
+      <table>
+        <thead><tr><th>对比项</th><th>TU Delft</th><th>爱丁堡大学</th><th>曼彻斯特大学</th></tr></thead>
+        <tbody>
+          <tr><td>中文官网/资料</td><td>无中文官网<br>中文资料依赖中介转载</td><td>无中文官网<br>中介渠道资料丰富</td><td>无中文官网<br>但对中国学生宣传力度最大</td></tr>
+          <tr><td>中文生活便利度</td><td>无本地唐人街<br>鹿特丹唐人街15分钟火车</td><td>小型华人聚居区<br>中餐丰富、中超齐全</td><td>英国第二大唐人街<br>校内菜单有中文、收银员会中文</td></tr>
+          <tr><td>常见留学中介</td><td>新东方 · 启德 · 金吉列<br>荷励方 · 欧亚桥</td><td>启德 · 新东方 · IDP · 高途</td><td>启德 · 指南者 · 侨谊 · 17liuxue</td></tr>
+          <tr><td>中介费用</td><td>约¥1万~5万</td><td>约¥2万~8万</td><td>约¥2.6万起</td></tr>
+          <tr><td>中国学生支持</td><td>ACSSNL中文迎新<br>国际办公室有限中文沟通</td><td>EUCSSA机场接机<br>微信群活跃 · 双语新生指导</td><td>华人社区成熟<br>曼大对中国院校有明确list</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 7 ====== -->
+<div class="section" id="s7">
+  <div class="section-title"><span class="num">07</span> 语言要求</div>
+  <div class="table-card">
+    <div class="card-body">
+      <table>
+        <thead><tr><th>对比项</th><th>TU Delft (航空航天)</th><th>爱丁堡大学 (EE)</th><th>曼彻斯特大学 (EE)</th></tr></thead>
+        <tbody>
+          <tr><td>雅思总分</td><td><strong>6.5</strong></td><td><strong>6.5</strong></td><td><strong>6.5</strong></td></tr>
+          <tr><td>雅思单项</td><td>≥ 6.0</td><td>≥ 5.5</td><td>≥ 6.0</td></tr>
+          <tr><td>托福总分</td><td><strong>90</strong></td><td><strong>92</strong></td><td><strong>90</strong></td></tr>
+          <tr><td>托福单项</td><td>≥ 21</td><td>≥ 20</td><td>≥ 22</td></tr>
+          <tr><td>其他英语考试</td><td>—</td><td>PTE 65 (≥54)<br>C1 Advanced 176</td><td>GCSE英语 C/4</td></tr>
+          <tr><td>学术要求</td><td>高考+211录取/211读1年<br>A-Level/IB亦可<br>均分85%+ · 需入学考试</td><td>A-Level AAA-ABB<br>IB 37 (HL 666) 或 32 (HL 655)<br>需HL数学AA+HL科学</td><td>A-Level AAA<br>IB 36 (HL 666)<br>需HL数学+HL物理/化学</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 8 ====== -->
+<div class="section" id="s8">
+  <div class="section-title"><span class="num">08</span> 地理位置</div>
+  <div class="card-row">
+    <div class="card col-tu">
+      <div class="card-header"><div class="icon" style="background:var(--delft-light)">📍</div><h3>代尔夫特</h3></div>
+      <div class="card-body">
+        <ul>
+          <li><strong>国家：</strong>荷兰南荷兰省</li>
+          <li><strong>城市特点：</strong>海牙与鹿特丹之间<br>自行车20分钟逛完的大学城/历史小镇</li>
+          <li><strong>交通：</strong>海牙15min · 鹿特丹15min<br>阿姆斯特丹1h · 史基浦机场45min</li>
+          <li><strong>火车：</strong>巴黎/布鲁塞尔高铁2.5h</li>
+          <li><strong>唐人街：</strong>鹿特丹唐人街15min火车<br>阿姆斯特丹唐人街1h · 无本地唐人街</li>
+          <li><strong>申根：</strong>26国自由通行</li>
+          <li>安静小镇，全城仅3家电影院</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card col-ed">
+      <div class="card-header"><div class="icon" style="background:var(--edinburgh-light)">📍</div><h3>爱丁堡</h3></div>
+      <div class="card-body">
+        <ul>
+          <li><strong>国家：</strong>苏格兰首府</li>
+          <li><strong>城市特点：</strong>中世纪古城 · 紧凑步行可达</li>
+          <li><strong>交通：</strong>伦敦国王十字4.5h火车<br>机场有转机中国航班</li>
+          <li><strong>唐人街：</strong>无大型独立唐人街<br>伦敦唐人街4.5h · 中餐丰富</li>
+          <li><strong>文化：</strong>国际艺术节/艺穗节(8月)<br>哈利·波特朝圣地 · Hogmanay跨年</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card col-man">
+      <div class="card-header"><div class="icon" style="background:var(--manchester-light)">📍</div><h3>曼彻斯特</h3></div>
+      <div class="card-body">
+        <ul>
+          <li><strong>国家：</strong>英格兰西北部</li>
+          <li><strong>城市特点：</strong>英国第二大城市<br>工业革命发源地 · 文化体育之城</li>
+          <li><strong>交通：</strong>伦敦2h直达<br>机场有直飞中国大陆航班</li>
+          <li><strong>唐人街：</strong>英国第二大唐人街<br>中餐/中超极丰富 · 火锅奶茶齐全</li>
+          <li><strong>生活：</strong>交通枢纽 · Metrolink轻轨<br>足球文化浓厚 · 学生票优惠</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 9 ====== -->
+<div class="section" id="s9">
+  <div class="section-title"><span class="num">09</span> 气候环境</div>
+  <div class="card-row">
+    <div class="card col-tu">
+      <div class="card-header"><div class="icon" style="background:var(--delft-light)">🌧️</div><h3>TU Delft（荷兰）</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;">温带海洋性气候 — 极其多变</div>
+        <ul>
+          <li><strong>冬季：</strong>0-6°C，16时天黑，阴冷多雨</li>
+          <li><strong>春季：</strong>回暖风大，郁金香季</li>
+          <li><strong>夏季：</strong>20-25°C，民居无空调</li>
+          <li><strong>全年：</strong>"9个月阴雨"</li>
+          <li>"风大得伞打不住" "冬天易emo"</li>
+          <li>夏季凉爽舒适，雪景运河美</li>
+          <li>⚠️ 冬季注意季节性情绪低落</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card col-ed">
+      <div class="card-header"><div class="icon" style="background:var(--edinburgh-light)">🌧️</div><h3>爱丁堡（苏格兰）</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;">海洋性温带 — 多雨风大</div>
+        <ul>
+          <li><strong>冬季：</strong>很少低于0°C</li>
+          <li><strong>夏季：</strong>很少超过22°C</li>
+          <li>比莫斯科温和得多</li>
+          <li>多雨、风力较大</li>
+          <li>比中国北方湿润</li>
+          <li>空气质量好、绿化多</li>
+          <li>对过敏体质友好</li>
+          <li>"和曼城半斤八两"</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card col-man">
+      <div class="card-header"><div class="icon" style="background:var(--manchester-light)">🌧️</div><h3>曼彻斯特（英格兰）</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;">温带海洋性 — 全年湿润多雨</div>
+        <ul>
+          <li><strong>冬季：</strong>阴冷，室内有暖气</li>
+          <li><strong>夏季：</strong>适中，早晚温差的较大</li>
+          <li>全年降水量大</li>
+          <li>出门随身带伞/防水冲锋衣</li>
+          <li>冬季日照短需适应</li>
+          <li>"多雨且冬季日照短"</li>
+          <li>但也有学生表示适应后还好</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 10 ====== -->
+<div class="section" id="s10">
+  <div class="section-title"><span class="num">10</span> 签证难度</div>
+  <div class="table-card">
+    <div class="card-body">
+      <table>
+        <thead><tr><th>对比项</th><th>🇳🇱 TU Delft (荷兰)</th><th>🏴󠁧󠁢󠁳󠁣󠁴󠁿 爱丁堡 (英国)</th><th>🏴󠁧󠁢󠁥󠁮󠁧󠁿 曼彻斯特 (英国)</th></tr></thead>
+        <tbody>
+          <tr><td>签证类型</td><td>反签证（Reverse Visa）<br>学校代提交至IND</td><td>Tier 4 (General) Student Visa</td><td>Tier 4 (General) Student Visa</td></tr>
+          <tr><td>通过率</td><td><span class="tag tag-green">95%~100%</span></td><td><span class="tag tag-green">96%~98%</span></td><td><span class="tag tag-green">96%~98%</span></td></tr>
+          <tr><td>面试要求</td><td>无需面试</td><td>部分需简短视频面试</td><td>部分需简短视频面试</td></tr>
+          <tr><td>办理周期</td><td>4~8周</td><td>约3周</td><td>约3周</td></tr>
+          <tr><td>资金证明</td><td>每月€1,100 (全年€13,200)<br>无需冻结 — 证明有足够资金即可</td><td>学费+生活费£12,006<br>需存满28天<br>建议准备£40,000~£55,000</td><td>学费+生活费<br>建议准备£40,000~£50,000</td></tr>
+          <tr><td>额外材料</td><td>医疗保险≥€3万<br>无犯罪证明(公证+双认证)</td><td>CAS · 肺结核证明</td><td>CAS · 肺结核证明</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 11 ====== -->
+<div class="section" id="s11">
+  <div class="section-title"><span class="num">11</span> 安全形势与歧视问题</div>
+  <div class="section-desc">治安评价 + 种族歧视详细调研</div>
+
+  <div class="card-row">
+    <div class="card col-tu">
+      <div class="card-header"><div class="icon" style="background:var(--delft-light)">🛡️</div><h3>TU Delft</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;">治安评分：4.8/5.0 (Shiksha)</div>
+        <ul>
+          <li>严格控枪，恶性暴力极少</li>
+          <li>大学城氛围平和</li>
+          <li>⚠️ 自行车被盗极普遍 · 租房诈骗</li>
+          <li>警察效率低 (非紧急案件)</li>
+        </ul>
+        <div class="warning-box">
+          <strong>⚠️ 歧视问题突出</strong>
+          <ul style="margin-top:6px;padding-left:16px;">
+            <li>政府数据：<strong>50%荷兰华人</strong>报告过歧视</li>
+            <li>瓦赫宁根中国博士生被围殴被迫回国</li>
+            <li>TU Delft博士生赵翰欣学术霸凌+跟踪监视</li>
+            <li>阿姆斯特丹6万本童书含歧视华人内容</li>
+            <li>小学仍传唱"Hanky Panky Shanghai"</li>
+            <li>日常隐形歧视：餐厅冷遇、"吃狗肉"质问</li>
+            <li>政策收紧：国防七子限制 · 敏感技术审查</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card col-ed">
+      <div class="card-header"><div class="icon" style="background:var(--edinburgh-light)">🛡️</div><h3>爱丁堡大学</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;">英国公认最安全留学城市之一</div>
+        <ul>
+          <li>"很晚了也敢自己街上溜达"</li>
+          <li>"丢了手机被居民捡到联系寄回"</li>
+          <li>犯罪率远低于同类留学城市平均</li>
+          <li>⚠️ 英国各地"发癫青少年"普遍</li>
+        </ul>
+        <div class="warning-box">
+          <strong>⚠️ 歧视同样存在</strong>
+          <ul style="margin-top:6px;padding-left:16px;">
+            <li>ISB调查：<strong>41%中国学生</strong>报告歧视</li>
+            <li>是印度学生的2倍，且比例上升</li>
+            <li>学术研究：中国学生多选择"否认/合理化"</li>
+            <li>微侵犯：被叫错名字、被假定英语不好</li>
+            <li>爱丁堡整体歧视少于英格兰大城市</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card col-man">
+      <div class="card-header"><div class="icon" style="background:var(--manchester-light)">🛡️</div><h3>曼彻斯特大学</h3></div>
+      <div class="card-body">
+        <div style="font-weight:600;">Nomads评级：Pretty Safe</div>
+        <ul>
+          <li>大学周边治安好，公寓24h安保</li>
+          <li>推荐区：Fallowfield/Withington</li>
+          <li>中国驻曼城总领馆24h领事保护</li>
+          <li>⚠️ 避免深夜市中心独行</li>
+        </ul>
+        <div class="warning-box">
+          <strong>⚠️ 歧视参照英国总体数据</strong>
+          <ul style="margin-top:6px;padding-left:16px;">
+            <li>同英国总体：41%中国学生报告歧视</li>
+            <li>文化多元，被当面针对较少</li>
+            <li>微侵犯存在 · HEPI报告"被当收入来源"</li>
+            <li>族群聚集 (ethnic clustering) 现象</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 12 ====== -->
+<div class="section" id="s12">
+  <div class="section-title"><span class="num">12</span> 毕业工签</div>
+  <div class="card-row">
+    <div class="card col-tu">
+      <div class="card-header"><div class="icon" style="background:var(--delft-light)">📜</div><h3>荷兰 Orientation Year</h3></div>
+      <div class="card-body">
+        <div style="text-align:center;font-size:36px;font-weight:800;color:var(--delft);">12 个月</div>
+        <ul style="margin-top:8px;">
+          <li>Zoekjaar — "荷兰给国际学生最大的礼物"</li>
+          <li>可全职工作/实习/接案，无需雇主担保</li>
+          <li>毕业后3年内申请 · 全球Top200大学也可</li>
+          <li>配偶可随行并工作</li>
+          <li>找到工作可转高技术移民签证</li>
+          <li>本科和硕士后可各申请一次</li>
+          <li>⚠️ 不可延期 · 薪资门槛€5,272/月</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card col-ed">
+      <div class="card-header"><div class="icon" style="background:var(--edinburgh-light)">📜</div><h3>英国 Graduate Visa</h3></div>
+      <div class="card-body">
+        <div style="text-align:center;font-size:36px;font-weight:800;color:var(--edinburgh);">2 年</div>
+        <ul style="margin-top:8px;">
+          <li>原PSW签证</li>
+          <li>可全职工作/兼职学习/创业</li>
+          <li>无雇主担保要求</li>
+          <li>⚠️ 2025年通过率降至78%</li>
+          <li>需毕业6个月内提交 · 最佳窗口：毕业前45天至毕业后30天</li>
+          <li>材料不全为拒签主因</li>
+          <li>英国境内提交 · 博士为3年</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card col-man">
+      <div class="card-header"><div class="icon" style="background:var(--manchester-light)">📜</div><h3>英国 Graduate Visa</h3></div>
+      <div class="card-body">
+        <div style="text-align:center;font-size:36px;font-weight:800;color:var(--manchester);">2 年</div>
+        <ul style="margin-top:8px;">
+          <li>与爱丁堡政策完全相同</li>
+          <li>曼城西北部就业中心 · 工程岗位多</li>
+          <li>可选工业实习年优势大</li>
+          <li>常见实习：国家电网 · 西门子能源 · ABB</li>
+          <li>⚠️ 注意PSW通过率下降趋势</li>
+          <li>提前准备Completion Letter</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h4>毕业后可停留时间对比</h4>
+      <div class="chart-wrap"><canvas id="chartStay"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 13 ====== -->
+<div class="section" id="s13">
+  <div class="section-title"><span class="num">13</span> 学费与生活费</div>
+  <div class="table-card">
+    <div class="card-body">
+      <table>
+        <thead><tr><th>对比项</th><th>TU Delft (荷兰)</th><th>爱丁堡大学 (英国)</th><th>曼彻斯特大学 (英国)</th></tr></thead>
+        <tbody>
+          <tr><td>年学费</td><td><strong>€19,906</strong> (约¥15.5万)</td><td><strong>£36,800</strong> (约¥34万)</td><td><strong>£32,000</strong> (约¥29万)</td></tr>
+          <tr><td>年生活费</td><td>€11,000~€15,000 (¥8.5~11.7万)</td><td>£12,000~£15,000 (¥11~14万)</td><td>£12,000~£15,000 (¥11~14万)</td></tr>
+          <tr><td><strong>年总费用</strong></td><td><strong>€30,000~€35,000</strong><br><strong>≈ ¥23万~27万</strong></td><td><strong>£48,800~£51,800</strong><br><strong>≈ ¥45万~48万</strong></td><td><strong>£44,000~£47,000</strong><br><strong>≈ ¥40万~43万</strong></td></tr>
+          <tr><td>学制总费用 (学费)</td><td>€59,718 (3年)</td><td>£147,200 (4年)</td><td>£96,000 (3年)</td></tr>
+          <tr><td>学制总费用 (含生活费)</td><td>≈ ¥70万~81万 (3年)</td><td>≈ ¥180万~192万 (4年)</td><td>≈ ¥120万~129万 (3年)</td></tr>
+          <tr><td>住宿费/月</td><td>€550~€800</td><td>£500~£1,000 (校内/校外)</td><td>£400~£870</td></tr>
+          <tr><td>餐饮/月</td><td>€200~€400</td><td>£200~£400</td><td>£200~£350</td></tr>
+          <tr><td>性价比特点</td><td>欧洲性价比最高</td><td>苏格兰首府，比伦敦便宜</td><td>比伦敦低30%-40%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h4>3年/4年总花费对比 (人民币)</h4>
+      <div class="chart-wrap"><canvas id="chartTotalCost"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 14 ====== -->
+<div class="section" id="s14">
+  <div class="section-title"><span class="num">14</span> 奖学金机会</div>
+  <div class="table-card">
+    <div class="card-body">
+      <table>
+        <thead><tr><th>项目</th><th>TU Delft</th><th>爱丁堡大学</th><th>曼彻斯特大学</th></tr></thead>
+        <tbody>
+          <tr><td><strong>校内奖学金 1</strong></td><td>NL Scholarship<br>€5,000/年 (最多3年=€15,000)</td><td>Global Excellence Scholarship<br>£5,000/年</td><td>Global Futures Scholarship<br>£5,000~£10,000 学费减免</td></tr>
+          <tr><td>名额</td><td>每个学院4个</td><td>全校范围</td><td>成绩均分85%+</td></tr>
+          <tr><td><strong>校内奖学金 2</strong></td><td>本科阶段奖学金非常有限<br>以下主要为硕士参考</td><td>学科领袖奖学金 £3,000<br>中国地区人才基金 10个名额</td><td>工程学院奖学金 £2,000~£5,000</td></tr>
+          <tr><td><strong>外部奖学金</strong></td><td>CSC国家公派 (需回国服务)</td><td>苏格兰Saltire £8,000<br>Chevening · CSC</td><td>Chevening · CSC</td></tr>
+          <tr><td><strong>A-Level奖励</strong></td><td>—</td><td>AAA* 首年减免£3,000</td><td>—</td></tr>
+          <tr><td><strong>奖学金总评</strong></td><td><span class="tag tag-yellow">本科机会有限</span></td><td><span class="tag tag-blue">选项较多</span></td><td><span class="tag tag-blue">有明确金额</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 15 ====== -->
+<div class="section" id="s15">
+  <div class="section-title"><span class="num">15</span> 就业前景</div>
+  <div class="section-desc">就业率 · 薪资 · 主要雇主 · 雇主认可度</div>
+  <div class="table-card">
+    <div class="card-body">
+      <table>
+        <thead><tr><th>对比项</th><th>TU Delft (航空航天)</th><th>爱丁堡大学 (EE)</th><th>曼彻斯特大学 (EE)</th></tr></thead>
+        <tbody>
+          <tr><td>就业率</td><td>6个月内 <strong>90%+</strong><br>3个月内 79%</td><td>就业/深造率 <strong>99.1%</strong><br>全英最高之一</td><td>整体就业率 93%<br>雇主青睐第1</td></tr>
+          <tr><td>税前起薪 (年)</td><td><strong>€40,000~€45,000</strong><br>≈ ¥31万~35万</td><td><strong>£30,000~£33,000</strong><br>≈ ¥28万~31万</td><td><strong>£30,000~£33,000</strong><br>≈ ¥28万~31万</td></tr>
+          <tr><td style="background:#fff3cd;font-weight:700;">税后到手 (月)</td><td style="background:#fff3cd;"><strong>≈ €2,100~€2,500</strong><br>⚠️ 荷兰税负高(36%-50%)<br>≈ ¥1.6万~1.9万/月</td><td style="background:#fff3cd;"><strong>≈ £2,200~£2,500</strong><br>英国税+NI约20%-28%<br>≈ ¥2.0万~2.3万/月</td><td style="background:#fff3cd;"><strong>≈ £2,200~£2,500</strong><br>英国税+NI约20%-28%<br>≈ ¥2.0万~2.3万/月</td></tr>
+          <tr><td>3年后薪资</td><td>—</td><td>£35,000 (≈ ¥32.5万)</td><td>£33,000 (≈ ¥30.7万)</td></tr>
+          <tr><td>5年后薪资</td><td>€50,000+ (≈ ¥39万+)<br>税后≈ ¥25万+</td><td>£39,000 (≈ ¥36万)<br>高端可达£53,000<br>税后≈ ¥29万+</td><td>£37,500 (≈ ¥35万)<br>高端可达£44,000<br>税后≈ ¥28万+</td></tr>
+          <tr><td>⚠️ 薪资提醒</td><td colspan="3" style="font-size:13px;">TU Delft税前€40k-€45k虽数字高于英国£30k-£33k，但荷兰所得税率36%-50%（高于英国的20%-28%），且生活成本偏高。<br><strong>税后实际可支配收入：英国两校反而高于TU Delft</strong>。确定留学目的地时请务必关注税后收入而非税前数字。</td></tr>
+          <tr><td>主要雇主</td><td>空客 · KLM · 劳斯莱斯<br>赛峰 · NLR · ESA<br>波音 · 壳牌</td><td>工程咨询 · 电力系统<br>通信 · 新能源 · Amazon AI</td><td>国家电网 · 西门子 · ABB<br>华为 · 电力系统 · 半导体</td></tr>
+          <tr><td>雇主认可度</td><td>全球航空业「欧洲常春藤」</td><td>IET认证 · CEng资格<br>Amazon AI合作</td><td>欧洲最大EEE院系<br>高压工程欧洲领先</td></tr>
+          <tr><td>就业支持</td><td>强制性实习 · 企业宣讲<br>简历/面试培训 · 求职门户</td><td>工业联络委员会<br>职业指导</td><td>可选带薪实习年<br>西北部就业中心</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h4>毕业后5年薪资增长对比</h4>
+      <div class="chart-wrap"><canvas id="chartSalaryGrowth"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 16 ====== -->
+<div class="section" id="s16">
+  <div class="section-title"><span class="num">16</span> 回国就业情况</div>
+  <div class="section-desc">各校专业在中国就业市场的认可度 · 目标企业 · 薪资范围</div>
+  <div class="table-card">
+    <div class="card-body">
+      <table>
+        <thead><tr><th>对比项</th><th>TU Delft 航空航天工程</th><th>爱丁堡大学 EE</th><th>曼彻斯特大学 EE</th></tr></thead>
+        <tbody>
+          <tr><td>国内认可度梯队</td><td><span class="tag tag-blue">第二梯队 · 工科强校</span><br>综合排名QS 47-49<br>中国教育部首批认证<br>≈ 国内中上流985工科水平</td><td><span class="tag tag-blue">第一梯队 · QS前30</span><br>QS 27 · 英国G5外唯一<br>四大排名均全球前40<br>一线城市落户绿色通道</td><td><span class="tag tag-blue">第一梯队 · QS前50</span><br>QS 34 · 罗素集团创始<br>QS前50落户政策倾斜<br>国内认知度极高</td></tr>
+          <tr><td>央企/国企求职</td><td>商飞C919 · 中航工业<br>航天科技 · 航天科工<br>⚠️ 部分涉密岗位政审严格<br>竞争对手：北航/西工大/哈工大</td><td><strong>国家电网8人录取(2024)</strong><br>南方电网 · 中石油<br>南京/北京电力系统明确认可<br>武汉大学+爱丁堡硕士真实案例</td><td><strong>国家电网23人录取(2025)</strong><br>南方电网 · 华能 · 中核<br>电网录取英校第1<br>"曼大帮"校友网络密集</td></tr>
+          <tr><td>互联网/科技大厂</td><td>大疆创新 · 亿航智能<br>腾讯/华为/小米 (硬件岗)<br>认可度不如北航/清华</td><td>华为 · 腾讯 · 字节 (32%)<br>Amazon AI合作背景加分<br>85%进世界500强/独角兽</td><td>华为 · 中兴 · 大疆 · 字节<br>QS前50简历筛不卡<br>需靠个人实习经历</td></tr>
+          <tr><td>新能源/汽车</td><td>亿航 · 峰飞航空 (eVTOL)<br>宁德时代 (电池热管理)</td><td>比亚迪 · 蔚来 (电控方向)<br>新能源电力系统</td><td><strong>比亚迪 · 宁德时代 · 蔚来</strong><br>西门子 · 博世 · 施耐德</td></tr>
+          <tr><td>回国起薪 (税前)</td><td>一线城市 <strong>¥15万~25万/年</strong><br>有项目经验可达¥20万~30万+</td><td><strong>¥15万~25万/年</strong><br>与国内顶尖985持平<br>头部券商/技术岗更高</td><td><strong>¥15万~25万/年</strong><br>国家电网起薪¥25万+(含六险二金)</td></tr>
+          <tr><td>考公/事业单位</td><td>资格审查通过率高<br>部分涉航岗位有专业限制</td><td>国考录用英校第4 (仅次于G5)<br>资格审查通过率98%<br>南京工信局明确认可</td><td>财政部录用名单含留学生<br>中信银行留学生>30%<br>21%进机关/事业单位</td></tr>
+          <tr><td>校友网络</td><td>全球校友网络强<br>国内航空航天圈人脉较集中<br>中国校友在商飞/航天科技</td><td>中国校友7,225人<br>罗素集团中排第3<br>中国职业周(23家企业)</td><td><strong>校友网络极其密集</strong><br>"曼大帮"活跃于电网/金融<br>内推优势明显</td></tr>
+          <tr><td>回国就业劣势</td><td>国内知名度不如英美名校<br>雇主对TU Delft认知度有限<br>需主动解释学校排名和实力</td><td>同校竞争较大(7,225中国学生)<br>薪资与国内985持平(无明显溢价)<br>苏格兰学制与中国不同</td><td>部分课程被指"松散"<br>毕业生数量庞大<br>需靠实习经历差异化</td></tr>
+          <tr><td>总体评价</td><td>回国进航空航天对口领域前景好，但国内雇主知名度有限，适合目标明确进入航空航天的学生。建议在读期间争取ESA/空客实习经历。</td><td>回国认可度非常高，国家电网/电力系统有明确就业通道，属于"万金油"型选择。适合希望保持多元选择的学生。</td><td>央企国企认可度极高(电网录取全英第1)，校友网络最密集，性价比最高的回国就业选择。适合希望最大化回国就业优势的学生。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 17 ====== -->
+<div class="section" id="s17">
+  <div class="section-title"><span class="num">17</span> 校友反馈</div>
+  <div class="card-row">
+    <div class="card col-tu">
+      <div class="card-header"><div class="icon" style="background:var(--delft-light)">🎙️</div><h3>TU Delft</h3></div>
+      <div class="card-body">
+        <div style="font-style:italic;color:var(--muted);border-left:3px solid var(--delft);padding-left:12px;margin-bottom:10px;">
+          "TUD不养闲人。不要拿英美水校来碰瓷，这里只有苦行僧般的独自修炼。"
+        </div>
+        <div style="font-weight:600;">👍 优势</div>
+        <ul><li>学术质量世界顶尖</li><li>毗邻ASML/飞利浦/壳牌</li><li>国际学生50% · 申根旅行便利</li></ul>
+        <div style="font-weight:600;margin-top:8px;">👎 槽点</div>
+        <ul><li>学业压力极大 (及格率50%)</li><li>「美食荒漠」· 住房紧张</li><li>荷兰人私下说荷兰语 · 社交难融入</li><li>⚠️ 隐性歧视普遍</li></ul>
+      </div>
+    </div>
+    <div class="card col-ed">
+      <div class="card-header"><div class="icon" style="background:var(--edinburgh-light)">🎙️</div><h3>爱丁堡大学</h3></div>
+      <div class="card-body">
+        <div style="font-style:italic;color:var(--muted);border-left:3px solid var(--edinburgh);padding-left:12px;margin-bottom:10px;">
+          "爱丁堡是一座古城……如果说伦敦是繁华的大城市，爱丁堡就是从中世纪走来的城堡。"
+        </div>
+        <div style="font-weight:600;">👍 优势</div>
+        <ul><li>卫报EE全英第1</li><li>城市安全 · 民风淳朴</li><li>文化氛围浓厚 · IET认证</li></ul>
+        <div style="font-weight:600;margin-top:8px;">👎 槽点</div>
+        <ul><li>「爱丁堡衡水大学」学习压力大</li><li>老房子居多 · 租房价格高</li><li>交通枢纽不如曼城</li></ul>
+      </div>
+    </div>
+    <div class="card col-man">
+      <div class="card-header"><div class="icon" style="background:var(--manchester-light)">🎙️</div><h3>曼彻斯特大学</h3></div>
+      <div class="card-body">
+        <div style="font-style:italic;color:var(--muted);border-left:3px solid var(--manchester);padding-left:12px;margin-bottom:10px;">
+          "曼大QS排名高……部分校友反映课程设置较松散，学术氛围偏冷淡。"
+        </div>
+        <div style="font-weight:600;">👍 优势</div>
+        <ul><li>QS 34 · 回国名气大</li><li>中国学生多 · 生活便利</li><li>雇主青睐第1 · 就业率高</li></ul>
+        <div style="font-weight:600;margin-top:8px;">👎 槽点</div>
+        <ul><li>部分专业中国学生70-80%</li><li>课程满意度72-76%</li><li>多雨 · 城市卫生不如爱丁堡</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Section 18 ====== -->
+<div class="section" id="s18">
+  <div class="section-title"><span class="num">18</span> 中介口碑</div>
+  <div class="section-desc">各校相关留学中介推荐与费用参考</div>
+  <div class="table-card">
+    <div class="card-body">
+      <table>
+        <thead><tr><th>对比项</th><th>TU Delft</th><th>爱丁堡大学</th><th>曼彻斯特大学</th></tr></thead>
+        <tbody>
+          <tr><td>首选中介</td><td>新东方前途出国 · 启德留学<br>金吉列留学 · 荷励方</td><td>启德教育 (有英国团队)<br>IDP教育 (官方合作)</td><td>启德教育 (工科强项)<br>指南者留学 (英港联申)</td></tr>
+          <tr><td>特色中介</td><td>荷励方 (荷兰本土)<br>欧亚桥 (专注北欧)</td><td>高途留学 · 新东方前途<br>IDP (雅思+留学一条龙)</td><td>侨谊留学 (学生口碑)<br>17liuxue (0中介费)</td></tr>
+          <tr><td>中介费用</td><td>约 ¥1万~5万</td><td>约 ¥2万~8万</td><td>约 ¥2.6万起</td></tr>
+          <tr><td>选中介建议</td><td>查资质 · 看成功案例<br>优先选有TU Delft AE案例的</td><td>优先选有英国本地团队的<br>确认工科申请经验</td><td>曼大有明确院校list<br>中介需掌握此信息</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>数据来源：QS/THE/卫报排名 · 各大学官网 · HESA Graduate Outcomes · 2024 ISB调查 · 荷兰政府歧视研究报告 · 校友反馈</p>
+  <p style="margin-top:4px;">最后更新：2026年4月 · 汇率参考：€1≈¥7.8, £1≈¥9.3</p>
+</div>
+
+</div><!-- /main -->
+
+<script>
+function closeSidebar() {
+  if (window.innerWidth <= 860) {
+    document.querySelector('.sidebar').classList.remove('open');
+  }
+}
+
+// Colors
+const c = {
+  delft: '#00A1E4',
+  delftBg: 'rgba(0,161,228,0.15)',
+  edinburgh: '#041E42',
+  edinburghBg: 'rgba(4,30,66,0.15)',
+  manchester: '#6C1D45',
+  manchesterBg: 'rgba(108,29,69,0.15)',
+};
+
+// Charts helper
+function createBar(ctx, labels, datasets, opts) {
+  return new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' } },
+        x: { grid: { display: false } }
+      },
+      ...opts
+    }
+  });
+}
+
+// 1. QS Ranking
+new Chart(document.getElementById('chartRank'), {
+  type: 'bar',
+  data: {
+    labels: ['TU Delft', '爱丁堡大学', '曼彻斯特大学'],
+    datasets: [{
+      label: 'QS 综合排名',
+      data: [49, 27, 34],
+      backgroundColor: [c.delft, c.edinburgh, c.manchester],
+      borderRadius: 6,
+    }, {
+      label: 'QS 专业排名',
+      data: [14, 55, 35],
+      backgroundColor: [c.delftBg, c.edinburghBg, c.manchesterBg],
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } },
+    scales: {
+      y: { beginAtZero: true, max: 70, grid: { color: 'rgba(0,0,0,0.04)' }, reverse: false, title: { display: true, text: '排名 (越小越好)' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 2. Cost comparison - annual
+new Chart(document.getElementById('chartCost'), {
+  type: 'bar',
+  data: {
+    labels: ['TU Delft', '爱丁堡大学', '曼彻斯特大学'],
+    datasets: [{
+      label: '年学费',
+      data: [15.5, 34, 29],
+      backgroundColor: [c.delft, c.edinburgh, c.manchester],
+      borderRadius: 6,
+    }, {
+      label: '年生活费',
+      data: [10, 12.5, 12.5],
+      backgroundColor: ['rgba(0,161,228,0.3)', 'rgba(4,30,66,0.3)', 'rgba(108,29,69,0.3)'],
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } },
+    scales: {
+      y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: '万人民币/年' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 3. Salary (税后月收入对比 - 更真实的比较)
+new Chart(document.getElementById('chartSalary'), {
+  type: 'bar',
+  data: {
+    labels: ['TU Delft', '爱丁堡大学', '曼彻斯特大学'],
+    datasets: [{
+      label: '税前年薪 (¥万)',
+      data: [33, 30, 30],
+      backgroundColor: [c.delftBg, c.edinburghBg, c.manchesterBg],
+      borderRadius: 6,
+    }, {
+      label: '税后月薪 (¥万/月)',
+      data: [1.8, 2.2, 2.2],
+      backgroundColor: [c.delft, c.edinburgh, c.manchester],
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } },
+    scales: {
+      y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: '收入对比' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 4. Chinese student count
+new Chart(document.getElementById('chartChinese'), {
+  type: 'bar',
+  data: {
+    labels: ['TU Delft', '爱丁堡大学', '曼彻斯特大学'],
+    datasets: [{
+      label: '中国学生数',
+      data: [800, 3000, 8000],
+      backgroundColor: [c.delft, c.edinburgh, c.manchester],
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: '人数 (约)' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 5. Chinese student %
+new Chart(document.getElementById('chartChinesePct'), {
+  type: 'bar',
+  data: {
+    labels: ['TU Delft', '爱丁堡大学', '曼彻斯特大学'],
+    datasets: [{
+      label: '占比',
+      data: [8, 8, 12],
+      backgroundColor: [c.delft, c.edinburgh, c.manchester],
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, max: 16, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: '%' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 6. Stay duration
+new Chart(document.getElementById('chartStay'), {
+  type: 'bar',
+  data: {
+    labels: ['TU Delft', '爱丁堡大学', '曼彻斯特大学'],
+    datasets: [{
+      label: '毕业后可停留 (月)',
+      data: [12, 24, 24],
+      backgroundColor: [c.delft, c.edinburgh, c.manchester],
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, max: 30, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: '月' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 7. Total cost
+new Chart(document.getElementById('chartTotalCost'), {
+  type: 'bar',
+  data: {
+    labels: ['TU Delft (3年)', '爱丁堡 (4年)', '曼彻斯特 (3年)'],
+    datasets: [{
+      label: '学制总花费',
+      data: [76, 186, 125],
+      backgroundColor: [c.delft, c.edinburgh, c.manchester],
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: '万人民币' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 8. Salary growth (after-tax estimated take-home comparison)
+new Chart(document.getElementById('chartSalaryGrowth'), {
+  type: 'line',
+  data: {
+    labels: ['起薪(税前年)', '税后月薪', '5年后(税前年)'],
+    datasets: [{
+      label: 'TU Delft',
+      data: [4.25, 0.23, 5.0],
+      borderColor: c.delft,
+      backgroundColor: 'rgba(0,161,228,0.08)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 5,
+      pointBackgroundColor: c.delft,
+    }, {
+      label: '爱丁堡',
+      data: [3.2, 0.24, 3.9],
+      borderColor: c.edinburgh,
+      backgroundColor: 'rgba(4,30,66,0.08)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 5,
+      pointBackgroundColor: c.edinburgh,
+    }, {
+      label: '曼彻斯特',
+      data: [3.2, 0.24, 3.75],
+      borderColor: c.manchester,
+      backgroundColor: 'rgba(108,29,69,0.08)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 5,
+      pointBackgroundColor: c.manchester,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } },
+    scales: {
+      y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: '€/£ 万' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+</script>
+</body>
+</html>
