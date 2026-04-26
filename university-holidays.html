@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>荷兰 vs 英国 vs 美国UCD大学假期 — 全年可视化</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1419; color: #e7e9ea; min-height: 100vh; padding: 24px; }
+  h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { color: #71767b; font-size: 0.9rem; margin-bottom: 28px; }
+  .legend { display: flex; gap: 24px; margin-bottom: 20px; font-size: 0.82rem; align-items: center; flex-wrap: wrap; }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .swatch { width: 14px; height: 14px; border-radius: 3px; }
+  .swatch.holiday { background: #e35a6a; }
+  .swatch.normal { background: #1c2b3a; }
+  .swatch.weekend { background: #2a3a4a; }
+  .swatch.break { background: #b84a5e; }
+  .months { display: flex; margin-left: 40px; font-size: 0.75rem; color: #71767b; margin-bottom: 4px; }
+  .month-label { width: calc(100% / 12); text-align: center; }
+  .grid-container { display: flex; gap: 0; }
+  .day-labels { display: flex; flex-direction: column; font-size: 0.72rem; color: #71767b; width: 36px; justify-content: space-around; text-align: right; padding-right: 8px; }
+  .day-labels span { height: 20px; line-height: 20px; }
+  .calendar { flex: 1; position: relative; }
+  .calendar-grid { display: grid; grid-template-columns: repeat(53, 1fr); gap: 2px; }
+  .week { display: flex; flex-direction: column; gap: 2px; }
+  .day { height: 20px; border-radius: 3px; transition: transform 0.1s; cursor: default; }
+  .day:hover { transform: scale(1.3); z-index: 10; position: relative; }
+  .day.holiday { background: #e35a6a; }
+  .day.normal { background: #1c2b3a; }
+  .day.weekend { background: #141d26; }
+  .day.break { background: #b84a5e; }
+  .day.empty { background: transparent; }
+  .country-section { margin-bottom: 36px; }
+  .country-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .flag { font-size: 1.8rem; }
+  .country-name { font-size: 1.1rem; font-weight: 600; }
+  .holiday-summary { font-size: 0.78rem; color: #71767b; }
+  .tooltip { position: fixed; background: #1c2b3a; border: 1px solid #2f3f50; padding: 8px 12px; border-radius: 8px; font-size: 0.78rem; pointer-events: none; display: none; z-index: 1000; max-width: 200px; }
+  .tooltip-date { color: #e7e9ea; font-weight: 600; margin-bottom: 4px; }
+  .tooltip-type { color: #e35a6a; }
+  .tooltip-country { color: #71767b; margin-top: 2px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 40px; }
+  .stat-card { background: #1c2b3a; border-radius: 12px; padding: 20px; }
+  .stat-label { font-size: 0.78rem; color: #71767b; margin-bottom: 8px; }
+  .stat-value { font-size: 1.4rem; font-weight: 700; }
+  .stat-value span { font-size: 0.8rem; color: #71767b; font-weight: 400; }
+  .stat-bar { height: 6px; background: #2f3f50; border-radius: 3px; margin-top: 12px; overflow: hidden; }
+  .stat-bar-fill { height: 100%; border-radius: 3px; }
+  .nl-fill { background: #e35a6a; }
+  .uk-fill { background: #4a9eff; }
+  .us-fill { background: #3ecf8e; }
+  .legend-right { display: flex; gap: 16px; margin-left: auto; }
+  .breakdown { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .breakdown h3 { font-size: 0.9rem; margin-bottom: 12px; color: #71767b; }
+  .breakdown ul { list-style: none; font-size: 0.82rem; line-height: 1.8; }
+  .breakdown li { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid #1c2b3a; }
+  .breakdown .date-range { color: #71767b; }
+  @media (max-width: 900px) {
+    .breakdown { grid-template-columns: 1fr; }
+    .months { overflow-x: auto; }
+    .calendar-grid { overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🇳🇱 荷兰 vs 🇬🇧 英国 vs 🇺🇸 美国UCD 大学假期 — 全年可视化</h1>
+<p class="subtitle">2025/26 学年 (9月–8月) · 每日假期对比 · 红色 = 假期</p>
+
+<div class="legend">
+  <span><div class="swatch holiday"></div> 假期 (公众假期+寒暑假)</span>
+  <span><div class="swatch break"></div> 中间假期 (期中假等)</span>
+  <span><div class="swatch normal"></div> 正常上课日</span>
+  <span><div class="swatch weekend"></div> 周末</span>
+</div>
+
+<!-- Netherlands -->
+<div class="country-section">
+  <div class="country-header">
+    <span class="flag">🇳🇱</span>
+    <span class="country-name">荷兰 — 研究型大学 (WO) 本科</span>
+    <span class="holiday-summary" id="nl-summary"></span>
+  </div>
+  <div class="months">
+    <div class="month-label">9月</div><div class="month-label">10月</div><div class="month-label">11月</div>
+    <div class="month-label">12月</div><div class="month-label">1月</div><div class="month-label">2月</div>
+    <div class="month-label">3月</div><div class="month-label">4月</div><div class="month-label">5月</div>
+    <div class="month-label">6月</div><div class="month-label">7月</div><div class="month-label">8月</div>
+  </div>
+  <div class="grid-container">
+    <div class="day-labels">
+      <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span>
+    </div>
+    <div class="calendar">
+      <div class="calendar-grid" id="nl-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- UK -->
+<div class="country-section">
+  <div class="country-header">
+    <span class="flag">🇬🇧</span>
+    <span class="country-name">英国 — 罗素大学集团 本科</span>
+    <span class="holiday-summary" id="uk-summary"></span>
+  </div>
+  <div class="months">
+    <div class="month-label">9月</div><div class="month-label">10月</div><div class="month-label">11月</div>
+    <div class="month-label">12月</div><div class="month-label">1月</div><div class="month-label">2月</div>
+    <div class="month-label">3月</div><div class="month-label">4月</div><div class="month-label">5月</div>
+    <div class="month-label">6月</div><div class="month-label">7月</div><div class="month-label">8月</div>
+  </div>
+  <div class="grid-container">
+    <div class="day-labels">
+      <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span>
+    </div>
+    <div class="calendar">
+      <div class="calendar-grid" id="uk-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- USA UC Davis -->
+<div class="country-section">
+  <div class="country-header">
+    <span class="flag">🇺🇸</span>
+    <span class="country-name">美国 — UC Davis 本科</span>
+    <span class="holiday-summary" id="us-summary"></span>
+  </div>
+  <div class="months">
+    <div class="month-label">9月</div><div class="month-label">10月</div><div class="month-label">11月</div>
+    <div class="month-label">12月</div><div class="month-label">1月</div><div class="month-label">2月</div>
+    <div class="month-label">3月</div><div class="month-label">4月</div><div class="month-label">5月</div>
+    <div class="month-label">6月</div><div class="month-label">7月</div><div class="month-label">8月</div>
+  </div>
+  <div class="grid-container">
+    <div class="day-labels">
+      <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span>
+    </div>
+    <div class="calendar">
+      <div class="calendar-grid" id="us-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-label">🇳🇱 荷兰假期总天数</div>
+    <div class="stat-value" id="nl-total">— <span>天/年</span></div>
+    <div class="stat-bar"><div class="stat-bar-fill nl-fill" id="nl-bar" style="width:0%"></div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">🇬🇧 英国假期总天数</div>
+    <div class="stat-value" id="uk-total">— <span>天/年</span></div>
+    <div class="stat-bar"><div class="stat-bar-fill uk-fill" id="uk-bar" style="width:0%"></div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">🇺🇸 UC Davis假期总天数</div>
+    <div class="stat-value" id="us-total">— <span>天/年</span></div>
+    <div class="stat-bar"><div class="stat-bar-fill us-fill" id="us-bar" style="width:0%"></div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">🇳🇱 荷兰上课天数</div>
+    <div class="stat-value" id="nl-study">— <span>天/年</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">🇬🇧 英国上课天数</div>
+    <div class="stat-value" id="uk-study">— <span>天/年</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">🇺🇸 UC Davis上课天数</div>
+    <div class="stat-value" id="us-study">— <span>天/年</span></div>
+  </div>
+</div>
+
+<!-- Holiday breakdown -->
+<div class="breakdown" style="grid-template-columns: 1fr 1fr 1fr;">
+  <div>
+    <h3>🇳🇱 荷兰假期明细</h3>
+    <ul id="nl-list"></ul>
+  </div>
+  <div>
+    <h3>🇬🇧 英国假期明细</h3>
+    <ul id="uk-list"></ul>
+  </div>
+  <div>
+    <h3>🇺🇸 UC Davis假期明细</h3>
+    <ul id="us-list"></ul>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-date" id="tt-date"></div>
+  <div class="tooltip-type" id="tt-type"></div>
+  <div class="tooltip-country" id="tt-country"></div>
+</div>
+
+<script>
+// Academic year 2025-2026: Sept 1, 2025 – Aug 31, 2026
+const START = new Date(2025, 8, 1);  // Sept 1, 2025
+const END   = new Date(2026, 7, 31); // Aug 31, 2026
+
+// Day types
+const T = { HOLIDAY: 'holiday', BREAK: 'break', NORMAL: 'normal', WEEKEND: 'weekend', EMPTY: 'empty' };
+
+// Netherlands holidays / breaks 2025-26
+const nlHolidays = [
+  { name: '秋季假期 (Herfstvakantie)', start: '2025-10-18', end: '2025-10-26', type: T.BREAK },
+  { name: '圣诞节假期 (Kerstvakantie)', start: '2025-12-20', end: '2026-01-04', type: T.HOLIDAY },
+  { name: '二月假期 (Voorjaarsvakantie)', start: '2026-02-14', end: '2026-02-22', type: T.BREAK },
+  { name: '复活节假期 (Meivakantie)', start: '2026-04-25', end: '2026-05-03', type: T.BREAK },
+  { name: '升天日 (Hemelvaartsdag)', start: '2026-05-14', end: '2026-05-17', type: T.HOLIDAY },
+  { name: '圣灵降临节', start: '2026-05-24', end: '2026-05-26', type: T.HOLIDAY },
+  { name: '暑假 (Zomervakantie)', start: '2026-07-04', end: '2026-08-30', type: T.HOLIDAY },
+];
+
+// UK holidays / breaks 2025-26
+const ukHolidays = [
+  { name: '秋季假期 (Autumn Break)', start: '2025-10-18', end: '2025-10-26', type: T.BREAK },
+  { name: '圣诞节假期 (Christmas)', start: '2025-12-20', end: '2026-01-04', type: T.HOLIDAY },
+  { name: '一月假期 (January Break)', start: '2026-01-24', end: '2026-02-01', type: T.BREAK },
+  { name: '复活节假期 (Easter)', start: '2026-03-28', end: '2026-04-12', type: T.HOLIDAY },
+  { name: '五月假期 (May Break)', start: '2026-05-23', end: '2026-06-07', type: T.BREAK },
+  { name: '暑假 (Summer)', start: '2026-06-27', end: '2026-08-31', type: T.HOLIDAY },
+];
+
+// UC Davis holidays / breaks 2025-26 (Quarter system)
+const usHolidays = [
+  { name: '感恩节 (Thanksgiving)', start: '2025-11-27', end: '2025-11-30', type: T.HOLIDAY },
+  { name: '冬季假期 (Winter Break)', start: '2025-12-19', end: '2026-01-04', type: T.BREAK },
+  { name: '马丁·路德·金日 (MLK Day)', start: '2026-01-19', end: '2026-01-19', type: T.HOLIDAY },
+  { name: '总统日 (Presidents Day)', start: '2026-02-16', end: '2026-02-17', type: T.BREAK },
+  { name: '春假 (Spring Break)', start: '2026-03-23', end: '2026-03-27', type: T.BREAK },
+  { name: '阵亡将士纪念日 (Memorial Day)', start: '2026-05-25', end: '2026-05-26', type: T.HOLIDAY },
+  { name: '暑假 (Summer Session)', start: '2026-06-29', end: '2026-08-22', type: T.HOLIDAY },
+];
+
+function parseDate(str) {
+  const [y, m, d] = str.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function isHoliday(date, holidays) {
+  for (const h of holidays) {
+    const s = parseDate(h.start);
+    const e = parseDate(h.end);
+    if (date >= s && date <= e) return h;
+  }
+  return null;
+}
+
+function isWeekend(date) {
+  const d = date.getDay();
+  return d === 0 || d === 6;
+}
+
+// Build calendar grid
+function buildCalendar(gridId, holidays, summaryId) {
+  const grid = document.getElementById(gridId);
+  let holidayDays = 0;
+  let studyDays = 0;
+
+  // Find the Monday of the week containing Sept 1, 2025
+  let current = new Date(START);
+  const dayOfWeek = current.getDay(); // 0=Sun
+  const daysFromMon = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  current.setDate(current.getDate() - daysFromMon);
+
+  let weekDiv = null;
+  let weekEmpty = true;
+
+  while (current <= END || (weekDiv && current <= END)) {
+    if (!weekDiv) {
+      weekDiv = document.createElement('div');
+      weekDiv.className = 'week';
+    }
+
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'day';
+
+    const inRange = current >= START && current <= END;
+
+    if (!inRange) {
+      dayDiv.classList.add('empty');
+    } else if (isWeekend(current)) {
+      dayDiv.classList.add('weekend');
+    } else {
+      const h = isHoliday(current, holidays);
+      if (h) {
+        dayDiv.classList.add(h.type);
+        dayDiv.dataset.holiday = h.name;
+        holidayDays++;
+      } else {
+        dayDiv.classList.add('normal');
+        studyDays++;
+      }
+    }
+
+    dayDiv.dataset.date = current.toISOString().slice(0, 10);
+    dayDiv.dataset.inRange = inRange;
+
+    // Tooltip
+    dayDiv.addEventListener('mouseenter', (e) => {
+      if (dayDiv.classList.contains('empty')) return;
+      const tooltip = document.getElementById('tooltip');
+      document.getElementById('tt-date').textContent = dayDiv.dataset.date;
+      const hName = dayDiv.dataset.holiday;
+      if (hName) {
+        document.getElementById('tt-type').textContent = hName;
+      } else if (dayDiv.classList.contains('weekend')) {
+        document.getElementById('tt-type').textContent = '周末';
+      } else {
+        document.getElementById('tt-type').textContent = '正常上课日';
+      }
+      tooltip.style.display = 'block';
+    });
+    dayDiv.addEventListener('mousemove', (e) => {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.style.left = e.clientX + 12 + 'px';
+      tooltip.style.top = e.clientY - 40 + 'px';
+    });
+    dayDiv.addEventListener('mouseleave', () => {
+      document.getElementById('tooltip').style.display = 'none';
+    });
+
+    weekDiv.appendChild(dayDiv);
+    weekEmpty = dayDiv.classList.contains('empty');
+
+    current.setDate(current.getDate() + 1);
+
+    // End of week
+    if (current.getDay() === 1 || current > END) {
+      grid.appendChild(weekDiv);
+      weekDiv = null;
+    }
+  }
+
+  document.getElementById(summaryId).textContent =
+    `${holidayDays}天假期 · ${studyDays}天上课`;
+
+  return { holidayDays, studyDays };
+}
+
+const nl = buildCalendar('nl-grid', nlHolidays, 'nl-summary');
+const uk = buildCalendar('uk-grid', ukHolidays, 'uk-summary');
+const us = buildCalendar('us-grid', usHolidays, 'us-summary');
+
+// Stats
+document.getElementById('nl-total').innerHTML = `${nl.holidayDays} <span>天/年</span>`;
+document.getElementById('uk-total').innerHTML = `${uk.holidayDays} <span>天/年</span>`;
+document.getElementById('us-total').innerHTML = `${us.holidayDays} <span>天/年</span>`;
+document.getElementById('nl-study').innerHTML = `${nl.studyDays} <span>天/年</span>`;
+document.getElementById('uk-study').innerHTML = `${uk.studyDays} <span>天/年</span>`;
+document.getElementById('us-study').innerHTML = `${us.studyDays} <span>天/年</span>`;
+
+const totalDays = 365;
+document.getElementById('nl-bar').style.width = (nl.holidayDays / totalDays * 100) + '%';
+document.getElementById('uk-bar').style.width = (uk.holidayDays / totalDays * 100) + '%';
+document.getElementById('us-bar').style.width = (us.holidayDays / totalDays * 100) + '%';
+
+// Breakdown lists
+function addBreakdown(listId, holidays) {
+  const list = document.getElementById(listId);
+  holidays.forEach(h => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${h.name}</span><span class="date-range">${h.start} – ${h.end}</span>`;
+    list.appendChild(li);
+  });
+}
+addBreakdown('nl-list', nlHolidays);
+addBreakdown('uk-list', ukHolidays);
+addBreakdown('us-list', usHolidays);
+</script>
+
+</body>
+</html>
