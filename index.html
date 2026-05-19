@@ -663,6 +663,28 @@ tr:hover {
     margin-bottom: 15px;
 }
 
+.signature-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px 15px;
+    font-size: 16px;
+    font-family: inherit;
+    border: 1px solid #dcdfe6;
+    border-radius: 6px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.signature-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(74,144,217,0.1);
+}
+
+.signature-input::placeholder {
+    color: #c0c4cc;
+}
+
 .signature-line {
     border-bottom: 1px solid var(--dark);
     height: 40px;
@@ -943,7 +965,7 @@ button:disabled {
             <div class="signature-grid" id="signatureGrid"></div>
             <div class="signature-signature">
                 <label>监督员签字</label>
-                <div class="signature-line"></div>
+                <input type="text" class="signature-input" placeholder="请输入监督员姓名">
             </div>
         </div>
 
