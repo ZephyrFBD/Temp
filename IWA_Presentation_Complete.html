@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Seminar IMP + Oral Defense — VR vs. Coffee Shops</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    line-height: 1.7;
+    padding: 20px;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: #fff;
+    padding: 40px 30px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  .header h1 { font-size: 1.6em; margin-bottom: 8px; }
+  .header .sub {
+    font-size: 1em;
+    opacity: 0.85;
+    font-weight: 300;
+    margin-bottom: 4px;
+  }
+  .header .meta {
+    font-size: 0.85em;
+    opacity: 0.65;
+    margin-top: 12px;
+  }
+
+  /* Section tabs */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #fff;
+    color: #1a1a2e;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { background: #e8eaf6; }
+  .tab-btn.active { background: #1a1a2e; color: #fff; }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Slide cards */
+  .slide-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 5px solid #1a1a2e;
+  }
+  .slide-card h3 {
+    font-size: 1.2em;
+    color: #1a1a2e;
+    margin-bottom: 12px;
+  }
+  .slide-card .subtitle {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+  .slide-card ul { list-style: none; }
+  .slide-card li {
+    padding: 5px 0 5px 20px;
+    position: relative;
+  }
+  .slide-card li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: #e94560;
+  }
+  .slide-num {
+    display: inline-block;
+    background: #1a1a2e;
+    color: #fff;
+    font-size: 0.75em;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-right: 10px;
+  }
+
+  /* Speech */
+  .speech-block {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 5px solid #e94560;
+  }
+  .speech-block .speech-label {
+    font-size: 0.8em;
+    font-weight: 700;
+    color: #e94560;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .speech-block p {
+    margin-bottom: 14px;
+    text-indent: 0;
+  }
+  .speech-block p:last-child { margin-bottom: 0; }
+  .stage-dir {
+    color: #888;
+    font-style: italic;
+    font-size: 0.92em;
+  }
+
+  /* Oral Defense */
+  .od-block {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 5px solid #0f3460;
+  }
+  .od-q {
+    font-weight: 700;
+    color: #0f3460;
+    margin-bottom: 4px;
+  }
+  .od-q::before { content: "Q: "; }
+  .od-a {
+    margin-top: 10px;
+    padding-left: 0;
+  }
+  .od-a p { margin-bottom: 10px; }
+  .od-a p:last-child { margin-bottom: 0; }
+  .od-label {
+    font-size: 0.8em;
+    font-weight: 700;
+    color: #0f3460;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    color: #888;
+    font-size: 0.85em;
+    padding: 30px 0 10px;
+    border-top: 1px solid #ddd;
+    margin-top: 30px;
+  }
+
+  @media (max-width: 600px) {
+    .header h1 { font-size: 1.2em; }
+    .slide-card, .speech-block, .od-block { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>VR vs. Coffee Shops: Can Technology Cure Loneliness?</h1>
+    <div class="sub">AP Seminar — Individual Multimedia Presentation + Oral Defense</div>
+    <div class="meta">
+      Research Question: To what extent can VR social platforms replace physical third<br>
+      places like coffee shops in solving global loneliness?
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('slides')">📊 PPT Slides</button>
+    <button class="tab-btn" onclick="switchTab('script')">🎤 Speech Script</button>
+    <button class="tab-btn" onclick="switchTab('defense')">🎯 Oral Defense</button>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- TAB 1: PPT SLIDES -->
+  <!-- ============================================================ -->
+  <div id="tab-slides" class="section active">
+
+    <div class="slide-card">
+      <h3><span class="slide-num">1</span>VR vs. Coffee Shops: Can Technology Cure Loneliness?</h3>
+      <div class="subtitle">To what extent can VR social platforms replace physical third places in solving global loneliness?</div>
+      <p style="color:#888; font-style:italic;">Presenter: [Your Name]</p>
+    </div>
+
+    <div class="slide-card">
+      <h3><span class="slide-num">2</span>The Loneliness Epidemic — A Public Health Emergency</h3>
+      <ul>
+        <li>U.S. Surgeon General (2023): social isolation as harmful as smoking 15 cigarettes/day</li>
+        <li>26% increased risk of premature death due to chronic loneliness (Holt-Lunstad et al., 2015)</li>
+        <li>Linked to heart disease, cognitive decline, and depression</li>
+        <li>Causes: urbanization (Putnam, 2000), remote work (Vyas & Butakhieo, 2021), decline of third places</li>
+        <li>Some propose VR as a solution — but is it enough?</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <h3><span class="slide-num">3</span>The Case for VR — What It Does Well</h3>
+      <ul>
+        <li>Overcomes geographic barriers — connects remote and mobility-limited individuals (Shin & Kim, 2023)</li>
+        <li>Low cost — many VR platforms are free or cheaper than visiting cafes (Bailenson, 2021)</li>
+        <li>Niche communities — marginalized groups find belonging online (Bailenson, 2021)</li>
+        <li>Activates brain regions linked to social reward (Bailenson & Yee, 2005)</li>
+        <li>Useful supplement for isolated populations</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <h3><span class="slide-num">4</span>Why VR Falls Short — What It Cannot Replace</h3>
+      <ul>
+        <li>Cannot replicate physical presence, non-verbal cues, or touch (Bailenson & Yee, 2005)</li>
+        <li>Social bonds in VR tend to be weaker — trust requires shared vulnerability (Granovetter, 1973)</li>
+        <li>Excessive VR use may replace real interaction rather than supplement it (Murthy, 2023)</li>
+        <li>"A virtual hug is not an actual embrace" — simulation is not embodiment (Shapiro, 2019)</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <h3><span class="slide-num">5</span>The Irreplaceable Value of Physical Third Places</h3>
+      <ul>
+        <li>Oldenburg (1989): third places = cafes, parks, community centers — essential for democracy and wellbeing</li>
+        <li>Enable unplanned, serendipitous encounters that VR cannot design</li>
+        <li>Maintain "weak ties" — crucial for community cohesion (Granovetter, 1973)</li>
+        <li>Engage all five senses — create embodied memories (Murthy, 2023)</li>
+        <li>Physical co-presence means sharing real space and time together</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <h3><span class="slide-num">6</span>A Balanced Path Forward — Policy Recommendations</h3>
+      <ul>
+        <li>Urban planners must treat third places as essential infrastructure, not luxury amenities (Murthy, 2023)</li>
+        <li>VR companies should avoid addictive design features (Bailenson, 2021)</li>
+        <li>Government investment in physical public spaces should increase</li>
+        <li>Use VR as a bridge for the isolated, not a replacement for real spaces</li>
+        <li>Neither technology alone nor physical spaces alone can solve loneliness</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <h3><span class="slide-num">7</span>Conclusion</h3>
+      <ul>
+        <li>VR expands access but cannot replicate emotional depth of physical spaces</li>
+        <li>The decline of third places is a choice about urban development</li>
+        <li>Solution is social, spatial, and ethical — not merely technological</li>
+        <li>Thoughtful integration of both VR and physical spaces can rebuild social fabric</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <h3><span class="slide-num">8</span>References</h3>
+      <ul>
+        <li>Bailenson, J. (2021). <em>Experience on demand</em>. W.W. Norton.</li>
+        <li>Granovetter, M. S. (1973). The strength of weak ties. <em>AJS</em>, 78(6), 1360-1380.</li>
+        <li>Holt-Lunstad et al. (2015). Loneliness and mortality. <em>Perspectives on Psychological Science</em>, 10(2), 227-237.</li>
+        <li>Murthy, V. H. (2023). <em>Our epidemic of loneliness and isolation</em>. U.S. HHS.</li>
+        <li>Oldenburg, R. (1989). <em>The great good place</em>. Paragon House.</li>
+        <li>Putnam, R. D. (2000). <em>Bowling alone</em>. Simon &amp; Schuster.</li>
+        <li>Shin, M., &amp; Kim, J. (2023). Social VR and psychological wellbeing. <em>Computers in Human Behavior</em>, 138, 107456.</li>
+        <li>Vyas, L., &amp; Butakhieo, N. (2021). Working from home during COVID-19. <em>Asia Pacific Journal of HR</em>, 59(2), 254-277.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- TAB 2: SPEECH SCRIPT -->
+  <!-- ============================================================ -->
+  <div id="tab-script" class="section">
+
+    <div class="speech-block">
+      <div class="speech-label">Slide 1 — Opening</div>
+      <p class="stage-dir">(Walk to the front, make eye contact with the audience, begin.)</p>
+      <p>Good morning. Imagine two scenarios: you open an app, put on a headset, and enter a virtual cafe where avatars chat. Or you walk to a real coffee shop, hear the espresso machine, smell the roasted beans, and accidentally bump into a neighbor. Which one makes you feel less lonely?</p>
+      <p>My name is [Your Name], and my research asks: to what extent can VR social platforms replace physical third places like coffee shops in solving global loneliness? My argument is that while VR expands access to social interaction, it cannot replicate the emotional depth, spontaneity, and community-building functions that physical third places provide.</p>
+    </div>
+
+    <div class="speech-block">
+      <div class="speech-label">Slide 2 — The Loneliness Epidemic</div>
+      <p>In 2023, the U.S. Surgeon General declared loneliness a public health epidemic. Social isolation is as harmful as smoking fifteen cigarettes daily. Chronic loneliness increases the risk of premature death by twenty-six percent, and it is linked to heart disease, cognitive decline, and depression.</p>
+      <p>What is causing this crisis? Urbanization has scattered traditional communities. Remote work has eliminated casual office interactions. And the decline of what sociologist Ray Oldenburg calls "third places" — spaces beyond home and work where people gather informally — has accelerated these trends. Some technologists propose VR as the solution. But is digital connection enough?</p>
+    </div>
+
+    <div class="speech-block">
+      <div class="speech-label">Slide 3 — The Case for VR</div>
+      <p>To be fair, VR does offer real benefits. It overcomes geographic barriers — individuals in remote areas or with mobility limitations can access virtual communities from home. Many VR applications are free or low-cost, much cheaper than visiting a cafe. For people with niche interests or marginalized identities, VR communities provide belonging that may not exist locally. Research by Bailenson and Yee shows that virtual social presence activates brain regions associated with social reward.</p>
+      <p>These are meaningful advantages. VR can serve as a valuable supplement for isolated populations.</p>
+    </div>
+
+    <div class="speech-block">
+      <div class="speech-label">Slide 4 — Why VR Falls Short</div>
+      <p>However, VR has fundamental limitations. The most significant is the absence of physical presence. Human communication depends heavily on non-verbal cues, physical proximity, and touch — dimensions VR cannot fully replicate. As researcher Jeremy Bailenson notes, a virtual hug is fundamentally different from an actual embrace.</p>
+      <p>Social bonds formed through VR tend to be weaker. Sociologist Mark Granovetter explains that trust develops through repeated, vulnerable interaction — something difficult to achieve in virtual spaces. Most concerning, the Surgeon General warns that excessive time in virtual spaces may replace physical interaction rather than supplement it. We risk swapping real connection for a thinner digital version.</p>
+    </div>
+
+    <div class="speech-block">
+      <div class="speech-label">Slide 5 — Physical Third Places</div>
+      <p>This is where physical third places prove irreplaceable. Ray Oldenburg argued that cafes, parks, and community centers are essential for democratic society and individual wellbeing. They provide settings for unplanned, serendipitous encounters — the kind that career opportunities and friendships often grow from.</p>
+      <p>Third places allow us to maintain "weak ties" — the casual connections with neighbors and familiar strangers that create community cohesion. Physical environments engage all our senses and create embodied memories that virtual experiences cannot match. As the Surgeon General emphasizes, physical co-presence — sharing the same space, breathing the same air — is fundamental to human wellbeing.</p>
+    </div>
+
+    <div class="speech-block">
+      <div class="speech-label">Slide 6 — A Balanced Path Forward</div>
+      <p>So what should we do? My research leads to a balanced approach. Urban planners must treat third places as essential infrastructure — not luxury amenities. Technology companies developing VR should resist manipulative features that create addictive usage patterns. Government investment in physical public spaces should increase.</p>
+      <p>VR platforms can serve as bridges connecting isolated individuals to broader communities. But physical third places should remain the primary site for deep relationship building and serendipitous encounters.</p>
+    </div>
+
+    <div class="speech-block">
+      <div class="speech-label">Slide 7 — Conclusion</div>
+      <p>To conclude: VR expands access but cannot replicate the emotional depth of physical spaces. The decline of third places is not inevitable — it reflects choices about urban development and public investment. The solution to global loneliness is ultimately social, spatial, and ethical, not merely technological. The question is how thoughtful integration of both can rebuild the social fabric that loneliness erodes.</p>
+      <p>Thank you. I am ready for your questions.</p>
+    </div>
+
+    <div class="speech-block" style="border-left-color:#999;">
+      <div class="speech-label">Slide 8 — References</div>
+      <p class="stage-dir">(Displayed during Q&A; do not read aloud unless asked.)</p>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- TAB 3: ORAL DEFENSE -->
+  <!-- ============================================================ -->
+  <div id="tab-defense" class="section">
+
+    <p style="margin-bottom:18px; color:#555;">Your teacher will ask <strong>2 questions</strong> after your presentation. Below are fully prepared answers aligned to the AP Seminar Oral Defense rubric.</p>
+
+    <div class="od-block">
+      <div class="od-label">Oral Defense — Question 1</div>
+      <div class="od-q">Describe how your thinking changed as a result of your research process.</div>
+      <div class="od-a">
+        <p>When I started this project, I assumed that because VR technology is advancing so rapidly, it would eventually become a complete replacement for physical social spaces. I thought the question was mostly about timing — when, not whether.</p>
+        <p>However, my research fundamentally changed my perspective. Reading Oldenburg's concept of third places and Granovetter's work on weak ties made me realize that physical spaces serve functions that cannot be technologically replicated. The idea of "embodied cognition" from Shapiro helped me understand that human relationships depend on shared physical presence in ways I had never considered.</p>
+        <p>The biggest shift was realizing that this is not a technological question at all — it is a social and spatial one. The decline of third places is not because technology made them obsolete. It is because of policy choices about urban development and public investment. That insight reshaped my entire argument from "VR is not good enough yet" to "we need both, but for fundamentally different purposes."</p>
+      </div>
+    </div>
+
+    <div class="od-block">
+      <div class="od-label">Oral Defense — Question 2</div>
+      <div class="od-q">What do you consider the strongest counterargument to your conclusion, and how did you address it in your research?</div>
+      <div class="od-a">
+        <p>The strongest counterargument is that VR technology is still in its early stages. Proponents argue that future advances — haptic feedback suits, brain-computer interfaces, photorealistic avatars — will eventually simulate physical presence so convincingly that the distinction between virtual and real will disappear.</p>
+        <p>I took this counterargument seriously. I included it in my paper by citing Bailenson's discussion of future VR capabilities. However, my research led me to reject this argument on conceptual grounds. The key distinction I discovered is between <em>simulation</em> and <em>embodiment</em>. Even the most sophisticated haptic feedback cannot replicate the unpredictability of a real environment — the spontaneous conversation with a stranger, the shared laughter over a spilled drink, the sense of being in a place with history and community.</p>
+        <p>As Granovetter's research shows, meaningful relationships depend on unplanned, vulnerable interactions that cannot be programmed. The Surgeon General's advisory reinforced that physical co-presence — occupying the same space, breathing the same air — has unique psychological benefits that simulation cannot replicate. So while VR will certainly improve, it addresses a different need: access for the isolated, not replacement of the real.</p>
+      </div>
+    </div>
+
+    <div class="od-block" style="border-left-color:#e94560;">
+      <div class="od-label">Bonus Question (Reflection on Personal Learning)</div>
+      <div class="od-q">How is this project significant for your own understanding or personal learning?</div>
+      <div class="od-a">
+        <p>This project was personally significant because it challenged my assumption that technology is always the best solution to social problems. I grew up believing that more connection — faster internet, better platforms — automatically meant better relationships.</p>
+        <p>What I learned is that <em>connection</em> and <em>community</em> are different things. VR can facilitate connection, but community requires shared physical space, serendipity, and embodied presence. This insight has changed how I think about my own social life — I now make a conscious effort to visit local cafes and parks rather than staying home on social media.</p>
+        <p>Academically, this project taught me that the best research questions do not have simple yes-or-no answers. The most honest conclusion is often a balanced one — acknowledging trade-offs rather than choosing sides.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    AP Seminar — Individual Multimedia Presentation &amp; Oral Defense<br>
+    Based on IWA: "To what extent can VR social platforms replace physical places like coffee shops in solving global loneliness?"
+  </div>
+</div>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
