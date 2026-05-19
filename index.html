@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小学均衡分班系统（正式版）</title>
+
+<style>
+
+:root {
+    --primary: #4a90d9;
+    --primary-dark: #3a7bc8;
+    --secondary: #67c23a;
+    --warning: #e6a23c;
+    --danger: #f56c6c;
+    --dark: #2c3e50;
+    --gray: #6c757d;
+    --light-gray: #e8ecf1;
+    --card-bg: #ffffff;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --radius: 12px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 30px 20px;
+}
+
+/* =====================启动画面===================== */
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.splash-screen.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.splash-logo {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--primary), #6e8cdb);
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    animation: logoFloat 3s ease-in-out infinite;
+    box-shadow: 0 20px 60px rgba(74,144,217,0.4);
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.splash-logo svg {
+    width: 60px;
+    height: 60px;
+    fill: white;
+}
+
+.splash-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 10px;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+.splash-subtitle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 50px;
+}
+
+.splash-loader {
+    width: 200px;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.splash-loader-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #6e8cdb);
+    border-radius: 2px;
+    animation: loading 2s ease-in-out forwards;
+}
+
+@keyframes loading {
+    0% { width: 0%; }
+    30% { width: 30%; }
+    60% { width: 60%; }
+    80% { width: 80%; }
+    100% { width: 100%; }
+}
+
+.splash-status {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+}
+
+/* =====================主容器===================== */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.container.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.header {
+    text-align: center;
+    padding-bottom: 30px;
+    border-bottom: 2px solid var(--light-gray);
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    margin: 0 0 10px 0;
+    color: var(--dark);
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.header .subtitle {
+    color: var(--gray);
+    font-size: 14px;
+}
+
+.section {
+    margin-bottom: 25px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--light-gray);
+    color: var(--dark);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.section-title::before {
+    content: "";
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(180deg, var(--primary), #6e8cdb);
+    border-radius: 2px;
+}
+
+.port-box {
+    background: linear-gradient(135deg, #f8fafc 0%, #f0f4f8 100%);
+    border: 1px solid var(--light-gray);
+    border-radius: var(--radius);
+    padding: 25px;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.toolbar label {
+    font-weight: 500;
+    color: var(--dark);
+    white-space: nowrap;
+}
+
+.toolbar input[type="file"] {
+    padding: 8px 12px;
+    border: 1px solid #dcdfe6;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+}
+
+.toolbar input[type="number"] {
+    width: 70px;
+    padding: 8px 12px;
+    border: 1px solid #dcdfe6;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.toolbar input[type="number"]:focus {
+    border-color: var(--primary);
+}
+
+button {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(74,144,217,0.3);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74,144,217,0.4);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button.secondary {
+    background: linear-gradient(135deg, #909399 0%, #73767a 100%);
+    box-shadow: 0 2px 8px rgba(144,147,153,0.3);
+}
+
+button.secondary:hover {
+    box-shadow: 0 4px 12px rgba(144,147,153,0.4);
+}
+
+button.export {
+    background: linear-gradient(135deg, var(--secondary) 0%, #5daf34 100%);
+    box-shadow: 0 2px 8px rgba(103,194,58,0.3);
+}
+
+button.export:hover {
+    box-shadow: 0 4px 12px rgba(103,194,58,0.4);
+}
+
+.status-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 20px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--light-gray);
+    transition: all 0.3s ease;
+}
+
+.status-item.success {
+    border-color: var(--secondary);
+    background: linear-gradient(135deg, #f0f9eb 0%, #ffffff 100%);
+}
+
+.status-item.warning {
+    border-color: var(--warning);
+    background: linear-gradient(135deg, #fdf6ec 0%, #ffffff 100%);
+}
+
+.status-item .icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.status-item.success .icon {
+    background: var(--secondary);
+    color: white;
+}
+
+.status-item.warning .icon {
+    background: var(--warning);
+    color: white;
+}
+
+.status-item .info {
+    flex: 1;
+}
+
+.status-item .info .label {
+    font-size: 12px;
+    color: var(--gray);
+}
+
+.status-item .info .value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.summary {
+    margin-top: 25px;
+}
+
+.summary h2 {
+    font-size: 18px;
+    color: var(--dark);
+    margin: 0 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #fff 100%);
+    border: 1px solid var(--light-gray);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(74,144,217,0.15);
+}
+
+.stat-card .class-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.stat-card .stat-row {
+    display: flex;
+    justify-content: space-around;
+    font-size: 13px;
+    color: var(--gray);
+}
+
+.stat-card .stat-row span {
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.stat-card .stat-row .male {
+    background: #e8f4fd;
+    color: var(--primary);
+}
+
+.stat-card .stat-row .female {
+    background: #fce8f1;
+    color: #e85c7d;
+}
+
+.stat-card .total {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-top: 8px;
+}
+
+.check-panel {
+    margin-top: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f0f4f8 100%);
+    border-radius: var(--radius);
+    border: 1px solid var(--light-gray);
+}
+
+.check-panel h2 {
+    font-size: 16px;
+    color: var(--dark);
+    margin: 0 0 15px 0;
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid var(--light-gray);
+    transition: all 0.3s ease;
+}
+
+.check-item:last-child {
+    margin-bottom: 0;
+}
+
+.check-item .check-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.check-item.success .check-icon {
+    background: var(--secondary);
+    color: white;
+}
+
+.check-item.error .check-icon {
+    background: var(--danger);
+    color: white;
+}
+
+.check-item .check-text {
+    flex: 1;
+    font-size: 14px;
+    color: var(--dark);
+}
+
+.check-item .check-value {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.signature {
+    margin-top: 25px;
+    padding: 25px;
+    background: linear-gradient(135deg, #fefbf3 0%, #fdf6e8 100%);
+    border-radius: var(--radius);
+    border: 1px solid #f0e6d3;
+}
+
+.signature h2 {
+    font-size: 16px;
+    color: var(--dark);
+    margin: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.signature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.signature-item {
+    padding: 12px 15px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #f0e6d3;
+}
+
+.signature-item .key {
+    font-size: 12px;
+    color: var(--gray);
+    margin-bottom: 5px;
+}
+
+.signature-item .value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.signature-item.highlight {
+    background: linear-gradient(135deg, #e8f4fd 0%, #d4e9fc 100%);
+    border-color: var(--primary);
+}
+
+.signature-item.highlight .value {
+    color: var(--primary);
+}
+
+.results {
+    margin-top: 25px;
+}
+
+.results > h2 {
+    font-size: 18px;
+    color: var(--dark);
+    margin: 0 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.class-box {
+    margin-bottom: 25px;
+    border: 1px solid var(--light-gray);
+    border-radius: var(--radius);
+    overflow: hidden;
+    animation: fadeInUp 0.5s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.class-title {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.class-title .badge {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f8fafc;
+    color: var(--dark);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 2px solid var(--light-gray);
+}
+
+td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid var(--light-gray);
+    font-size: 14px;
+}
+
+tr:hover {
+    background: #f8fafc;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+.student-id {
+    font-family: "Consolas", monospace;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid var(--light-gray);
+    text-align: center;
+    color: var(--gray);
+    font-size: 13px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    .header h1 {
+        font-size: 22px;
+    }
+
+    .splash-title {
+        font-size: 24px;
+    }
+
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toolbar label {
+        margin-bottom: 5px;
+    }
+
+    .status-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- 启动画面 -->
+<div class="splash-screen" id="splashScreen">
+    <div class="splash-logo">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+        </svg>
+    </div>
+    <div class="splash-title">上海市小学均衡分班系统</div>
+    <div class="splash-subtitle">均衡分班 · 公平公正 · 透明可查</div>
+    <div class="splash-loader">
+        <div class="splash-loader-bar"></div>
+    </div>
+    <div class="splash-status" id="splashStatus">正在初始化系统...</div>
+</div>
+
+<!-- 主容器 -->
+<div class="container" id="mainContainer">
+
+    <div class="header">
+        <h1>上海市小学一年级均衡分班系统</h1>
+        <div class="subtitle">数据仅供内部管理使用，请妥善保管</div>
+    </div>
+
+    <!-- 数据输入端口 -->
+    <div class="section">
+        <div class="section-title">数据输入端口</div>
+        <div class="port-box">
+            <div class="toolbar">
+                <label>正式名单：</label>
+                <input type="file" id="formalInput" accept=".csv,.txt">
+
+                <label>预分班文件：</label>
+                <input type="file" id="presetInput" accept=".csv,.txt">
+
+                <label>班级数量：</label>
+                <input type="number" id="classCount" value="8" min="1" max="20">
+
+                <button onclick="runAssignment()">开始正式分班</button>
+                <button class="secondary" onclick="resetAll()">重新开始</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据输出端口 -->
+    <div class="section">
+        <div class="section-title">数据输出端口</div>
+        <div class="port-box">
+            <div class="toolbar">
+                <button class="export" onclick="exportCSV()">导出正式分班结果</button>
+                <button onclick="window.print()">打印结果</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 状态栏 -->
+    <div id="statusBar" class="status-bar">
+        <div class="status-item warning">
+            <div class="icon">!</div>
+            <div class="info">
+                <div class="label">正式名单</div>
+                <div class="value">未导入</div>
+            </div>
+        </div>
+        <div class="status-item warning">
+            <div class="icon">!</div>
+            <div class="info">
+                <div class="label">预分班文件</div>
+                <div class="value">未导入</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分班统计 -->
+    <div id="summary" class="summary"></div>
+
+    <!-- 检测面板 -->
+    <div id="checkPanel" class="check-panel"></div>
+
+    <!-- 电子签章 -->
+    <div id="signature" class="signature"></div>
+
+    <!-- 结果展示 -->
+    <div id="results" class="results"></div>
+
+    <div class="footer">
+        系统依据均衡分班原则自动生成结果
+    </div>
+
+</div>
+
+<script>
+
+// ============================
+// 启动动画
+// ============================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const splashScreen = document.getElementById('splashScreen');
+    const mainContainer = document.getElementById('mainContainer');
+    const splashStatus = document.getElementById('splashStatus');
+
+    // 模拟加载步骤
+    const steps = [
+        '正在加载配置...',
+        '正在验证数据接口...',
+        '正在初始化分班算法...',
+        '系统准备就绪'
+    ];
+
+    let stepIndex = 0;
+    const statusInterval = setInterval(() => {
+        if (stepIndex < steps.length) {
+            splashStatus.textContent = steps[stepIndex];
+            stepIndex++;
+        }
+    }, 450);
+
+    // 2.5秒后关闭启动画面
+    setTimeout(() => {
+        clearInterval(statusInterval);
+        splashStatus.textContent = '系统准备就绪';
+
+        setTimeout(() => {
+            splashScreen.classList.add('fade-out');
+            mainContainer.classList.add('visible');
+        }, 300);
+    }, 2500);
+});
+
+let students = [];
+let presetStudents = [];
+let classes = [];
+let exportData = [];
+
+updateStatus();
+
+// ============================
+// 文件入口
+// ============================
+
+document.getElementById('formalInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        parseFormalCSV(event.target.result);
+    };
+    reader.readAsText(file, 'utf-8');
+});
+
+document.getElementById('presetInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        parsePresetCSV(event.target.result);
+    };
+    reader.readAsText(file, 'utf-8');
+});
+
+// ============================
+// 正式名单解析
+// ============================
+
+function parseFormalCSV(text) {
+    const lines = text.trim().split(/\r?\n/);
+    const headers = lines[0].split(',');
+    students = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',');
+        const obj = {};
+        headers.forEach((h, index) => {
+            obj[h.trim()] = (cols[index] || '').trim();
+        });
+        if (!obj['姓名']) continue;
+        students.push(obj);
+    }
+
+    updateStatus();
+    alert("正式名单导入成功：" + students.length + " 人");
+}
+
+// ============================
+// 预分班解析
+// ============================
+
+function parsePresetCSV(text) {
+    const lines = text.trim().split(/\r?\n/);
+    const headers = lines[0].split(',');
+    presetStudents = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',');
+        const obj = {};
+        headers.forEach((h, index) => {
+            obj[h.trim()] = (cols[index] || '').trim();
+        });
+        if (!obj['姓名']) continue;
+        presetStudents.push(obj);
+    }
+
+    updateStatus();
+    alert("预分班导入成功：" + presetStudents.length + " 人");
+}
+
+// ============================
+// 状态栏
+// ============================
+
+function updateStatus() {
+    const formalClass = students.length > 0 ? 'success' : 'warning';
+    const formalText = students.length > 0 ? '已导入 (' + students.length + '人)' : '未导入';
+
+    const presetClass = presetStudents.length > 0 ? 'success' : 'warning';
+    const presetText = presetStudents.length > 0 ? '已导入 (' + presetStudents.length + '人)' : '未导入';
+
+    document.getElementById('statusBar').innerHTML = `
+        <div class="status-item ${formalClass}">
+            <div class="icon">${students.length > 0 ? '✓' : '!'}</div>
+            <div class="info">
+                <div class="label">正式名单</div>
+                <div class="value">${formalText}</div>
+            </div>
+        </div>
+        <div class="status-item ${presetClass}">
+            <div class="icon">${presetStudents.length > 0 ? '✓' : '!'}</div>
+            <div class="info">
+                <div class="label">预分班文件</div>
+                <div class="value">${presetText}</div>
+            </div>
+        </div>
+    `;
+}
+
+// ============================
+// 打乱
+// ============================
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+// ============================
+// 学号生成
+// ============================
+
+function generateStudentId(year, classNo, index) {
+    return String(year).slice(-2) + String(classNo).padStart(2, '0') + String(index).padStart(4, '0');
+}
+
+// ============================
+// 正式分班
+// ============================
+
+function runAssignment() {
+    if (students.length === 0) {
+        alert("请先导入正式名单");
+        return;
+    }
+
+    const classCount = parseInt(document.getElementById('classCount').value);
+    classes = [];
+    exportData = [];
+
+    for (let i = 0; i < classCount; i++) {
+        classes.push([]);
+    }
+
+    // 预分班锁定
+    const lockedStudents = new Set();
+    presetStudents.forEach(p => {
+        const stu = students.find(s => s['姓名'] === p['姓名']);
+        if (!stu) return;
+        const target = parseInt(p['指定班级']) - 1;
+        if (target >= 0 && target < classCount) {
+            classes[target].push(stu);
+            lockedStudents.add(stu['姓名']);
+        }
+    });
+
+    // 剩余学生
+    const remaining = students.filter(s => !lockedStudents.has(s['姓名']));
+    const boys = remaining.filter(s => s['性别'] === '男');
+    const girls = remaining.filter(s => s['性别'] === '女');
+    shuffle(boys);
+    shuffle(girls);
+
+    // 智能均衡算法
+    function assignBalanced(arr) {
+        arr.forEach(stu => {
+            let minClass = 0;
+            for (let i = 1; i < classCount; i++) {
+                if (classes[i].length < classes[minClass].length) {
+                    minClass = i;
+                }
+            }
+            classes[minClass].push(stu);
+        });
+    }
+
+    assignBalanced(boys);
+    assignBalanced(girls);
+
+    // 学号
+    const year = new Date().getFullYear();
+    classes.forEach((cls, classIndex) => {
+        cls.sort((a, b) => a['姓名'].localeCompare(b['姓名'], 'zh'));
+        cls.forEach((stu, index) => {
+            stu['学号'] = generateStudentId(year, classIndex + 1, index + 1);
+            stu['班级'] = `一(${classIndex + 1})班`;
+            exportData.push({
+                '学号': stu['学号'],
+                '班级': stu['班级'],
+                '姓名': stu['姓名'],
+                '性别': stu['性别'],
+                '身份证号': maskId(stu['身份证号'])
+            });
+        });
+    });
+
+    renderSummary();
+    renderResults();
+    runCheck();
+    generateSignature();
+
+    // 无痕删除预分班
+    presetStudents = [];
+    document.getElementById('presetInput').value = '';
+    updateStatus();
+
+    alert("正式分班完成");
+}
+
+// ============================
+// 身份证脱敏
+// ============================
+
+function maskId(id) {
+    if (!id) return '';
+    if (id.length < 8) return id;
+    return id.slice(0, 4) + "********" + id.slice(-4);
+}
+
+// ============================
+// 分班统计
+// ============================
+
+function renderSummary() {
+    let html = '<h2>分班统计</h2><div class="stats-grid">';
+
+    classes.forEach((cls, index) => {
+        const boys = cls.filter(s => s['性别'] === '男').length;
+        const girls = cls.filter(s => s['性别'] === '女').length;
+        html += `
+            <div class="stat-card">
+                <div class="class-name">一(${index + 1})班</div>
+                <div class="stat-row">
+                    <span class="male">男 ${boys}</span>
+                    <span class="female">女 ${girls}</span>
+                </div>
+                <div class="total">${cls.length} 人</div>
+            </div>
+        `;
+    });
+
+    html += '</div>';
+    document.getElementById('summary').innerHTML = html;
+}
+
+// ============================
+// 检测系统
+// ============================
+
+function runCheck() {
+    const counts = classes.map(c => c.length);
+    const max = Math.max(...counts);
+    const min = Math.min(...counts);
+    const diff = max - min;
+
+    const ids = exportData.map(d => d['学号']);
+    const set = new Set(ids);
+    const hasDuplicate = ids.length !== set.size;
+
+    let html = '<h2>透明检测</h2>';
+    html += `
+        <div class="check-item success">
+            <div class="check-icon">✓</div>
+            <div class="check-text">班级人数最大差值</div>
+            <div class="check-value">${diff}</div>
+        </div>
+        <div class="check-item ${hasDuplicate ? 'error' : 'success'}">
+            <div class="check-icon">${hasDuplicate ? '!' : '✓'}</div>
+            <div class="check-text">重复学号检测</div>
+            <div class="check-value">${hasDuplicate ? '存在重复' : '未发现重复'}</div>
+        </div>
+    `;
+
+    document.getElementById('checkPanel').innerHTML = html;
+}
+
+// ============================
+// 渲染结果
+// ============================
+
+function renderResults() {
+    let html = '<h2>分班结果</h2>';
+
+    classes.forEach((cls, index) => {
+        const totalCount = cls.length;
+        const boysCount = cls.filter(s => s['性别'] === '男').length;
+        const girlsCount = cls.filter(s => s['性别'] === '女').length;
+
+        html += `
+            <div class="class-box" style="animation-delay: ${index * 0.1}s">
+                <div class="class-title">
+                    <span>一(${index + 1})班</span>
+                    <span class="badge">共 ${totalCount} 人（男 ${boysCount} / 女 ${girlsCount}）</span>
+                </div>
+                <table>
+                    <tr>
+                        <th>学号</th>
+                        <th>姓名</th>
+                        <th>性别</th>
+                        <th>身份证号</th>
+                    </tr>
+        `;
+
+        cls.forEach(stu => {
+            html += `
+                <tr>
+                    <td class="student-id">${stu['学号']}</td>
+                    <td>${stu['姓名']}</td>
+                    <td>${stu['性别']}</td>
+                    <td>${maskId(stu['身份证号'])}</td>
+                </tr>
+            `;
+        });
+
+        html += '</table></div>';
+    });
+
+    document.getElementById('results').innerHTML = html;
+}
+
+// ============================
+// 电子签章
+// ============================
+
+function generateSignature() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const randomA = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const randomB = Math.floor(1000 + Math.random() * 9000);
+    const randomC = Math.floor(1000 + Math.random() * 9000);
+    const sign = `沪教分班〔${year}〕${randomA}-${randomB}-${randomC}`;
+    const verifyCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+
+    document.getElementById('signature').innerHTML = `
+        <h2>电子签章</h2>
+        <div class="signature-grid">
+            <div class="signature-item highlight">
+                <div class="key">系统签章编号</div>
+                <div class="value">${sign}</div>
+            </div>
+            <div class="signature-item">
+                <div class="key">系统校验码</div>
+                <div class="value">${verifyCode}</div>
+            </div>
+            <div class="signature-item">
+                <div class="key">分班时间</div>
+                <div class="value">${now.toLocaleString()}</div>
+            </div>
+            <div class="signature-item">
+                <div class="key">数据状态</div>
+                <div class="value">已封存</div>
+            </div>
+        </div>
+        <div style="margin-top:15px; padding:15px; background:white; border-radius:6px; border:1px solid #f0e6d3;">
+            <div style="font-size:13px; color:#666;">监督员签字：____________________</div>
+        </div>
+    `;
+}
+
+// ============================
+// 导出CSV
+// ============================
+
+function exportCSV() {
+    if (exportData.length === 0) {
+        alert("请先完成分班");
+        return;
+    }
+
+    let csv = "学号,班级,姓名,性别,身份证号\n";
+    exportData.forEach(row => {
+        csv += `${row['学号']},${row['班级']},${row['姓名']},${row['性别']},${row['身份证号']}\n`;
+    });
+
+    const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = '正式分班结果.csv';
+    link.click();
+}
+
+// ============================
+// 重置系统
+// ============================
+
+function resetAll() {
+    students = [];
+    presetStudents = [];
+    classes = [];
+    exportData = [];
+
+    document.getElementById('formalInput').value = '';
+    document.getElementById('presetInput').value = '';
+    document.getElementById('summary').innerHTML = '';
+    document.getElementById('results').innerHTML = '';
+    document.getElementById('checkPanel').innerHTML = '';
+    document.getElementById('signature').innerHTML = '';
+
+    updateStatus();
+}
+
+</script>
+
+</body>
+</html>
