@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>参考文献真实性调研报告</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Microsoft YaHei", "SimHei", Arial, sans-serif; background: #f5f5f5; padding: 20px; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; color: #333; padding: 30px 0; border-bottom: 3px solid #4A90D9; margin-bottom: 30px; }
+        
+        .summary { background: #fff; padding: 25px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .summary h2 { color: #333; margin-bottom: 15px; }
+        .stats { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px; }
+        .stat-box { flex: 1; min-width: 150px; padding: 15px; border-radius: 6px; text-align: center; }
+        .stat-box.high { background: #d4edda; color: #155724; }
+        .stat-box.medium { background: #fff3cd; color: #856404; }
+        .stat-box.low { background: #f8d7da; color: #721c24; }
+        .stat-box span { font-size: 2em; font-weight: bold; display: block; }
+
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #4A90D9; color: #fff; font-weight: bold; }
+        tr:hover { background: #f8f9fa; }
+        tr:last-child td { border-bottom: none; }
+        
+        .badge { padding: 4px 10px; border-radius: 12px; font-weight: bold; font-size: 0.8em; display: inline-block; }
+        .badge.high { background: #28a745; color: #fff; }
+        .badge.medium { background: #ffc107; color: #333; }
+        .badge.low { background: #dc3545; color: #fff; }
+        
+        .detail-section { display: none; }
+        .detail-section.active { display: block; }
+        .toggle-btn { cursor: pointer; color: #4A90D9; text-decoration: none; }
+        .toggle-btn:hover { text-decoration: underline; }
+
+        .ref-card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid; display: none; }
+        .ref-card.active { display: block; }
+        .ref-card.high { border-left-color: #28a745; }
+        .ref-card.medium { border-left-color: #ffc107; }
+        .ref-card.low { border-left-color: #dc3545; }
+        
+        .ref-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .ref-number { background: #4A90D9; color: #fff; padding: 4px 12px; border-radius: 15px; font-weight: bold; font-size: 0.9em; }
+        
+        .ref-citation { color: #333; font-size: 0.95em; margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .ref-citation em { color: #666; }
+        
+        .findings { margin-top: 15px; }
+        .findings h4 { color: #555; margin-bottom: 8px; font-size: 0.95em; }
+        .finding-item { padding: 8px 0; border-bottom: 1px dashed #eee; display: flex; gap: 10px; }
+        .finding-item:last-child { border-bottom: none; }
+        .finding-icon { width: 20px; color: #28a745; }
+        .finding-icon.warn { color: #ffc107; }
+        .finding-icon.fail { color: #dc3545; }
+        
+        .issues { background: #fff3cd; padding: 12px; border-radius: 4px; margin-top: 12px; border-left: 3px solid #ffc107; }
+        .issues h4 { color: #856404; margin-bottom: 8px; }
+        .issues.danger { background: #f8d7da; border-left-color: #dc3545; }
+        .issues.danger h4 { color: #721c24; }
+
+        .footer { text-align: center; margin-top: 40px; padding: 20px; color: #888; font-size: 0.85em; }
+        
+        .filter-buttons { margin-bottom: 20px; text-align: center; }
+        .filter-btn { padding: 8px 20px; margin: 5px; border: none; border-radius: 20px; cursor: pointer; font-size: 0.9em; transition: all 0.3s; }
+        .filter-btn:hover { opacity: 0.8; }
+        .filter-btn.active { color: #fff; }
+        .filter-btn.all { background: #4A90D9; color: #fff; }
+        .filter-btn.high { background: #28a745; color: #fff; }
+        .filter-btn.medium { background: #ffc107; color: #333; }
+        .filter-btn.low { background: #dc3545; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>参考文献真实性与可信度调研报告</h1>
+        
+        <div class="summary">
+            <h2>调研统计</h2>
+            <p>共调研 <strong>23篇</strong> 参考文献，涵盖期刊论文、书籍章节、学位论文等类型。</p>
+            <div class="stats">
+                <div class="stat-box high"><span>11</span>高可信度</div>
+                <div class="stat-box medium"><span>3</span>中可信度</div>
+                <div class="stat-box low"><span>9</span>低可信度</div>
+            </div>
+        </div>
+
+        <h2 style="margin: 30px 0 15px;">汇总表格</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>作者</th>
+                    <th>年份</th>
+                    <th>期刊/来源</th>
+                    <th>可信度</th>
+                    <th>详情</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>[1]</td>
+                    <td>Rubin, Coplan, Bowker</td>
+                    <td>2009</td>
+                    <td>Annual Review of Psychology</td>
+                    <td><span class="badge high">HIGH</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref1'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[2]</td>
+                    <td>Parkhurst, Asher</td>
+                    <td>1992</td>
+                    <td>Developmental Psychology</td>
+                    <td><span class="badge high">HIGH</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref2'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[3]</td>
+                    <td>Oh, Rubin, et al.</td>
+                    <td>2008</td>
+                    <td>Journal of Abnormal Child Psychology</td>
+                    <td><span class="badge high">HIGH</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref3'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[4]</td>
+                    <td>Li, Cui, Leckman, et al.</td>
+                    <td>2022</td>
+                    <td>Journal of Child Psychology and Psychiatry</td>
+                    <td><span class="badge high">HIGH</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref4'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[5]</td>
+                    <td>Xu, Zhang, Zhang</td>
+                    <td>2009</td>
+                    <td>Acta Psychologica Sinica</td>
+                    <td><span class="badge high">HIGH</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref5'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[6]</td>
+                    <td>Li, Zhang, Zhang</td>
+                    <td>2024</td>
+                    <td>Mental Health Education in Primary and Secondary Schools</td>
+                    <td><span class="badge low">LOW</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref6'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[7]</td>
+                    <td>Zhong, et al.</td>
+                    <td>2014</td>
+                    <td>Chinese Journal of School Health</td>
+                    <td><span class="badge low">LOW</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref7'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[8]</td>
+                    <td>Shang, X.</td>
+                    <td>2024</td>
+                    <td>Soochow University (Master's thesis)</td>
+                    <td><span class="badge low">LOW</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref8'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[9]</td>
+                    <td>Wei, Y.</td>
+                    <td>2024</td>
+                    <td>Harbin Normal University (Master's thesis)</td>
+                    <td><span class="badge low">LOW</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref9'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[10]</td>
+                    <td>Liu, Li, Wang</td>
+                    <td>2015</td>
+                    <td>Journal of Child and Family Studies</td>
+                    <td><span class="badge low">LOW</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref10'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[11]</td>
+                    <td>Allen, J. P.</td>
+                    <td>2008</td>
+                    <td>Handbook of Attachment (Book Chapter)</td>
+                    <td><span class="badge high">HIGH</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref11'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[12]</td>
+                    <td>Peng, L.</td>
+                    <td>2023</td>
+                    <td>Nanning Normal University (Master's thesis)</td>
+                    <td><span class="badge medium">MEDIUM</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref12'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[13]</td>
+                    <td>Zhang, Y.</td>
+                    <td>2011</td>
+                    <td>Chinese Journal of Clinical Psychology</td>
+                    <td><span class="badge medium">MEDIUM</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref13'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[14]</td>
+                    <td>Sun, Wang</td>
+                    <td>2015</td>
+                    <td>Advances in Psychology</td>
+                    <td><span class="badge low">LOW</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref14'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[15]</td>
+                    <td>Xiong, Hu, Ye</td>
+                    <td>2022</td>
+                    <td>Current Psychology</td>
+                    <td><span class="badge medium">MEDIUM</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref15'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[16]</td>
+                    <td>Barzeva, Meeus, Oldehinkel</td>
+                    <td>2019</td>
+                    <td>Journal of Abnormal Child Psychology</td>
+                    <td><span class="badge high">HIGH</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref16'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[17]</td>
+                    <td>Sun, Yu, Liu</td>
+                    <td>2024</td>
+                    <td>Advances in Social Sciences</td>
+                    <td><span class="badge low">LOW</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref17'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[18]</td>
+                    <td>Berry, Phinney, Sam, Vedder</td>
+                    <td>2006</td>
+                    <td>Applied Psychology</td>
+                    <td><span class="badge high">HIGH</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref18'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[19]</td>
+                    <td>Zhou, Diao</td>
+                    <td>2024</td>
+                    <td>Journal of Educational Studies</td>
+                    <td><span class="badge low">LOW</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref19'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[20]</td>
+                    <td>Baumeister, Bratslavsky, Finkenauer, Vohs</td>
+                    <td>2001</td>
+                    <td>Review of General Psychology</td>
+                    <td><span class="badge high">HIGH</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref20'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[21]</td>
+                    <td>Clark, Wells</td>
+                    <td>1995</td>
+                    <td>Social Phobia (Book Chapter)</td>
+                    <td><span class="badge high">HIGH</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref21'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[22]</td>
+                    <td>Spence, Rapee</td>
+                    <td>2016</td>
+                    <td>Behaviour Research and Therapy</td>
+                    <td><span class="badge high">HIGH</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref22'); return false;">查看</a></td>
+                </tr>
+                <tr>
+                    <td>[23]</td>
+                    <td>Liu, Wang</td>
+                    <td>2020</td>
+                    <td>Chinese Education & Society</td>
+                    <td><span class="badge low">LOW</span></td>
+                    <td><a href="#" class="toggle-btn" onclick="toggleDetail('ref23'); return false;">查看</a></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 详细报告卡片 -->
+        <div id="ref1" class="ref-card high">
+            <div class="ref-header">
+                <span class="ref-number">[1]</span>
+                <span class="badge high">HIGH</span>
+            </div>
+            <div class="ref-citation">
+                Rubin, K. H., Coplan, R. J., & Bowker, J. C. (2009). Social withdrawal in childhood. <em>Annual Review of Psychology</em>, 60, 141-171.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Annual Review of Psychology 为真实、高影响因子期刊 (IF: 41.8)</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 三位作者均为知名发育心理学家</div>
+                <div class="finding-item"><span class="finding-icon">V</span> DOI: 10.1146/annurev.psych.60.110707.163642 可正常解析</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 被引用次数: 1,136+ (极高影响力)</div>
+            </div>
+        </div>
+
+        <div id="ref2" class="ref-card high">
+            <div class="ref-header">
+                <span class="ref-number">[2]</span>
+                <span class="badge high">HIGH</span>
+            </div>
+            <div class="ref-citation">
+                Parkhurst, J. T., & Asher, S. R. (1992). Peer rejection in middle school... <em>Developmental Psychology</em>, 28(2), 231-241.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Developmental Psychology 为APA发行的真实权威期刊</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 作者均为真实研究者，被引用457+次</div>
+                <div class="finding-item"><span class="finding-icon">V</span> DOI: 10.1037/0012-1649.28.2.231 可验证</div>
+                <div class="finding-item"><span class="finding-icon warn">!</span> 姓名的"Jodie"应为"Jennifer"（转录笔误）</div>
+            </div>
+        </div>
+
+        <div id="ref3" class="ref-card high">
+            <div class="ref-header">
+                <span class="ref-number">[3]</span>
+                <span class="badge high">HIGH</span>
+            </div>
+            <div class="ref-citation">
+                Oh, W., Rubin, K. H., et al. (2008). Trajectories of social withdrawal... <em>Journal of Abnormal Child Psychology</em>, 36(4), 553-566.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Journal of Abnormal Child Psychology 为Springer发行的真实同行评审期刊</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 六位作者均为知名大学真实研究者</div>
+                <div class="finding-item"><span class="finding-icon">V</span> DOI: 10.1007/s10802-007-9199-z 可验证</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 全文可通过PubMed Central免费获取</div>
+            </div>
+        </div>
+
+        <div id="ref4" class="ref-card high">
+            <div class="ref-header">
+                <span class="ref-number">[4]</span>
+                <span class="badge high">HIGH</span>
+            </div>
+            <div class="ref-citation">
+                Li, F., Cui, Y., Leckman, J. F., et al. (2022). Prevalence of mental disorders... <em>Journal of Child Psychology and Psychiatry</em>, 63(1), 34-46.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Journal of Child Psychology and Psychiatry 为顶级同行评审期刊 (IF: ~7.0)</div>
+                <div class="finding-item"><span class="finding-icon">V</span> J.F. Leckman为耶鲁大学知名儿童精神科研究者</div>
+                <div class="finding-item"><span class="finding-icon">V</span> PMID: 34019305, DOI: 10.1111/jcpp.13445 可验证</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 样本量17,524人为中国大规模全国性调查，数据合理</div>
+            </div>
+        </div>
+
+        <div id="ref5" class="ref-card high">
+            <div class="ref-header">
+                <span class="ref-number">[5]</span>
+                <span class="badge high">HIGH</span>
+            </div>
+            <div class="ref-citation">
+                Xu, F., Zhang, W., & Zhang, L. (2009). The effect of family functioning... <em>Acta Psychologica Sinica</em>, 41(12), 1165-1174.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Acta Psychologica Sinica 为中国心理学会主办的真实旗舰期刊</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 三位作者均可确认为真实研究者</div>
+                <div class="finding-item"><span class="finding-icon">V</span> DOI: 10.3724/sp.j.1041.2009.01165 可验证</div>
+            </div>
+        </div>
+
+        <div id="ref6" class="ref-card low">
+            <div class="ref-header">
+                <span class="ref-number">[6]</span>
+                <span class="badge low">LOW</span>
+            </div>
+            <div class="ref-citation">
+                Li, B., Zhang, L., & Zhang, Z. (2024). The effect of childhood environmental unpredictability... <em>Mental Health Education in Primary and Secondary Schools</em>, (21), 10-13.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 期刊名称无法在任何数据库验证</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> PubMed无此主题记录</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 作者Li B., Zhang L., Zhang Z.无法验证</div>
+            </div>
+            <div class="issues danger">
+                <h4>问题</h4>
+                <p>期刊名称无法确认为正规学术期刊，可能是伪造的或掠夺性期刊引用。强烈建议不要使用此参考文献。</p>
+            </div>
+        </div>
+
+        <div id="ref7" class="ref-card low">
+            <div class="ref-header">
+                <span class="ref-number">[7]</span>
+                <span class="badge low">LOW</span>
+            </div>
+            <div class="ref-citation">
+                Zhong, J., et al. (2014). The impact of online social dependence... <em>Chinese Journal of School Health</em>, 35(8), 1172-1175.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon warn">?</span> "Zhong, J., et al." 作者列表不完整，无法验证</div>
+                <div class="finding-item"><span class="finding-icon warn">?</span> 互联网搜索未返回明确验证结果</div>
+            </div>
+            <div class="issues">
+                <h4>问题</h4>
+                <p>作者仅列出"et al."，无法确认完整作者清单。建议联系作者获取完整引用信息后再使用。</p>
+            </div>
+        </div>
+
+        <div id="ref8" class="ref-card low">
+            <div class="ref-header">
+                <span class="ref-number">[8]</span>
+                <span class="badge low">LOW</span>
+            </div>
+            <div class="ref-citation">
+                Shang, X. (2024). The relationship between family psychological environment... [Master's thesis, Soochow University].
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> 苏州大学真实存在，有心理学系</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 无法在CNKI/万方数据库找到"Shang X."的2024年硕士论文</div>
+            </div>
+            <div class="issues">
+                <h4>问题</h4>
+                <p>硕士论文本身可信度低于同行评审期刊，且此论文无法在公开数据库验证。如需使用，建议通过CNKI直接检索确认。</p>
+            </div>
+        </div>
+
+        <div id="ref9" class="ref-card low">
+            <div class="ref-header">
+                <span class="ref-number">[9]</span>
+                <span class="badge low">LOW</span>
+            </div>
+            <div class="ref-citation">
+                Wei, Y. (2024). The relationship between parental conflict... [Master's thesis, Harbin Normal University].
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> 哈尔滨师范大学真实存在</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 多次数据库搜索未找到此论文记录</div>
+            </div>
+            <div class="issues">
+                <h4>问题</h4>
+                <p>硕士论文无法验证。建议直接联系哈尔滨师范大学研究生院或通过CNKI确认论文是否存在。</p>
+            </div>
+        </div>
+
+        <div id="ref10" class="ref-card low">
+            <div class="ref-header">
+                <span class="ref-number">[10]</span>
+                <span class="badge low">LOW</span>
+            </div>
+            <div class="ref-citation">
+                Liu, J., Li, Y., & Wang, L. (2015). Family predictors of social withdrawal... <em>Journal of Child and Family Studies</em>, 24(8), 2356-2364.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon fail">X</span> DOI: 10.1007/s10882-015-9432-6 解析至完全不同文章（物理康复领域）</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 页码2356-2364在Volume 24, Issue 8中不存在</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 标题在所有数据库中无匹配记录</div>
+            </div>
+            <div class="issues danger">
+                <h4>问题</h4>
+                <p><strong>此引用疑似完全伪造。</strong> DOI指向完全不同期刊的不同文章，页码不存在。强烈建议不要使用此参考文献。</p>
+            </div>
+        </div>
+
+        <div id="ref11" class="ref-card high">
+            <div class="ref-header">
+                <span class="ref-number">[11]</span>
+                <span class="badge high">HIGH</span>
+            </div>
+            <div class="ref-citation">
+                Allen, J. P. (2008). The attachment system in adolescence. In J. Cassidy & P. R. Shaver (Eds.), <em>Handbook of attachment</em> (2nd ed., pp. 419-435). Guilford Press.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Handbook of Attachment 2nd edition真实存在，Guilford Press出版</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 编辑者J. Cassidy与P.R. Shaver均为真实研究者</div>
+                <div class="finding-item"><span class="finding-icon">V</span> J.P. Allen为青少年发展领域真实研究者</div>
+            </div>
+        </div>
+
+        <div id="ref12" class="ref-card medium">
+            <div class="ref-header">
+                <span class="ref-number">[12]</span>
+                <span class="badge medium">MEDIUM</span>
+            </div>
+            <div class="ref-citation">
+                Peng, L. (2023). The influence of parent-child attachment... [Master's thesis, Nanning Normal University].
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> 南宁师范大学真实存在，有心理学系</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 研究主题合理，研究框架可信</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 无法在公开数据库验证此特定论文</div>
+            </div>
+            <div class="issues">
+                <h4>说明</h4>
+                <p>大学与心理学系均真实存在，研究主题合理，但具体论文无法通过CNKI等公开数据库验证。硕士论文可信度本身低于期刊论文，不宜作为唯一证据来源。</p>
+            </div>
+        </div>
+
+        <div id="ref13" class="ref-card medium">
+            <div class="ref-header">
+                <span class="ref-number">[13]</span>
+                <span class="badge medium">MEDIUM</span>
+            </div>
+            <div class="ref-citation">
+                Zhang, Y. (2011). The relationship between psychological resilience... <em>Chinese Journal of Clinical Psychology</em>, 19(4), 522-524.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Chinese Journal of Clinical Psychology 为真实期刊（ISSN: 1005-3611）</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 期刊由中华心理卫生协会主办，收录于NLM Catalog</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> DOI无法解析</div>
+            </div>
+            <div class="issues">
+                <h4>说明</h4>
+                <p>期刊真实存在，建议通过CNKI直接验证此具体文章。DOI失效可能是格式问题，需进一步确认。</p>
+            </div>
+        </div>
+
+        <div id="ref14" class="ref-card low">
+            <div class="ref-header">
+                <span class="ref-number">[14]</span>
+                <span class="badge low">LOW</span>
+            </div>
+            <div class="ref-citation">
+                Sun, Y., & Wang, W. (2015). Gender dimorphism of social anxiety disorder... <em>Advances in Psychology</em>, 5, 33-40.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> 文章存在，DOI: 10.12677/ap.2015.51005 可验证</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 引用声称两位作者，实际只有一位作者(孙易卓)</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 标题中拼音格式极为可疑（机翻痕迹）</div>
+            </div>
+            <div class="issues">
+                <h4>问题</h4>
+                <p>作者数量完全错误，且出版商信誉存疑。如需引用类似主题，建议寻找其他正规期刊文章替代。</p>
+            </div>
+        </div>
+
+        <div id="ref15" class="ref-card medium">
+            <div class="ref-header">
+                <span class="ref-number">[15]</span>
+                <span class="badge medium">MEDIUM</span>
+            </div>
+            <div class="ref-citation">
+                Xiong, M., Hu, Z. Q., & Ye, Y. D. (2022). Association of relative deprivation... <em>Current Psychology</em>, 42, 20849-20859.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Current Psychology 为Springer真实期刊</div>
+                <div class="finding-item"><span class="finding-icon">V</span> DOI: 10.1007/s12144-022-03194-9 可验证</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 样本量1,772名中国流动青少年，合理可行</div>
+                <div class="finding-item"><span class="finding-icon warn">!</span> 引用年份2022，但实际在Volume 42 (2023)发表</div>
+            </div>
+            <div class="issues">
+                <h4>说明</h4>
+                <p>文章真实存在，小差异（如年份/卷号）为学术引用常见差异，不影响文献真实性。可放心使用，但需修正年份。</p>
+            </div>
+        </div>
+
+        <div id="ref16" class="ref-card high">
+            <div class="ref-header">
+                <span class="ref-number">[16]</span>
+                <span class="badge high">HIGH</span>
+            </div>
+            <div class="ref-citation">
+                Barzeva, S. A., Meeus, W. H. J., & Oldehinkel, A. J. (2019). Social withdrawal in adolescence... <em>Journal of Abnormal Child Psychology</em>, 47(5), 865-879.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> 期刊真实，ISRCAP附属期刊，IF: 2.7</div>
+                <div class="finding-item"><span class="finding-icon">V</span> PMID: 30483901, DOI: 10.1007/s10802-018-0497-4 可验证</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 三位作者均为荷兰真实研究者</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 全文可通过PubMed Central免费获取</div>
+            </div>
+        </div>
+
+        <div id="ref17" class="ref-card low">
+            <div class="ref-header">
+                <span class="ref-number">[17]</span>
+                <span class="badge low">LOW</span>
+            </div>
+            <div class="ref-citation">
+                Sun, H., Yu, Y., & Liu, Z. (2024). Adolescent social withdrawal... <em>Advances in Social Sciences</em>, 13(1), 160-166.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon fail">X</span> SCIRP列表中不存在"Advances in Social Sciences"此期刊</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> DOI: 10.4236/ass.2024.1310 返回404错误</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> Google Scholar无此文献记录</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> SCIRP为已知有问题的出版商</div>
+            </div>
+            <div class="issues danger">
+                <h4>问题</h4>
+                <p><strong>此引用疑似伪造。</strong> 期刊不存在，DOI无效，SCIRP为信誉存疑的出版商。强烈建议不要使用此参考文献。</p>
+            </div>
+        </div>
+
+        <div id="ref18" class="ref-card high">
+            <div class="ref-header">
+                <span class="ref-number">[18]</span>
+                <span class="badge high">HIGH</span>
+            </div>
+            <div class="ref-citation">
+                Berry, J. W., Phinney, J. S., Sam, D. L., & Vedder, P. (2006). Immigrant youth... <em>Applied Psychology</em>, 55(3), 303-332.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Applied Psychology 为Wiley发行的真实期刊</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 四位作者均为知名研究者（John Berry, Jean Phinney等）</div>
+                <div class="finding-item"><span class="finding-icon">V</span> DOI: 10.1111/j.1464-0597.2006.00256.x 可验证</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 被引用2,164次，领域影响力极高</div>
+            </div>
+        </div>
+
+        <div id="ref19" class="ref-card low">
+            <div class="ref-header">
+                <span class="ref-number">[19]</span>
+                <span class="badge low">LOW</span>
+            </div>
+            <div class="ref-citation">
+                Zhou, J., & Diao, Y. (2024). Identity, anchor, belonging... <em>Journal of Educational Studies</em>, 20(1), 120-132.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Journal of Educational Studies (教育学报) 为北京大学发行的真实期刊</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 精确标题在所有数据库中无法找到</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 拼音标题有明显打字错误（机翻特征）</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 无DOI，无引用记录</div>
+            </div>
+            <div class="issues">
+                <h4>问题</h4>
+                <p>拼音标题格式极为可疑（机翻特征明显），文章无法验证。建议联系作者确认原始文献，或通过CNKI检索验证。</p>
+            </div>
+        </div>
+
+        <div id="ref20" class="ref-card high">
+            <div class="ref-header">
+                <span class="ref-number">[20]</span>
+                <span class="badge high">HIGH</span>
+            </div>
+            <div class="ref-citation">
+                Baumeister, R. F., Bratslavsky, E., Finkenauer, C., & Vohs, K. D. (2001). Bad is stronger than good. <em>Review of General Psychology</em>, 5(4), 323-370.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Review of General Psychology 为APA发行的真实同行评审期刊</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 四位作者均为知名心理学家（Baumeister等）</div>
+                <div class="finding-item"><span class="finding-icon">V</span> DOI: 10.1037/1089-2680.5.4.323 可正常解析</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 文章为心理学领域极高引用量论文（负性偏见研究经典）</div>
+            </div>
+        </div>
+
+        <div id="ref21" class="ref-card high">
+            <div class="ref-header">
+                <span class="ref-number">[21]</span>
+                <span class="badge high">HIGH</span>
+            </div>
+            <div class="ref-citation">
+                Clark, D. M., & Wells, A. (1995). A cognitive model of social phobia. In R. G. Heimberg, et al. (Eds.), <em>Social phobia: Diagnosis, assessment, and treatment</em> (pp. 69-93). Guilford Press.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> 图书《Social phobia: Diagnosis, assessment, and treatment》真实存在，Guilford Press 1995年出版</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 四位编者(Heimberg, Liebowitz, Hope, Schneier)均为真实研究者</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 作者Clark与Wells均为社交焦虑障碍领域知名学者</div>
+            </div>
+        </div>
+
+        <div id="ref22" class="ref-card high">
+            <div class="ref-header">
+                <span class="ref-number">[22]</span>
+                <span class="badge high">HIGH</span>
+            </div>
+            <div class="ref-citation">
+                Spence, S. H., & Rapee, R. M. (2016). The etiology of social anxiety disorder... <em>Behaviour Research and Therapy</em>, 86, 50-66.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Behaviour Research and Therapy 为Elsevier发行的真实同行评审期刊</div>
+                <div class="finding-item"><span class="finding-icon">V</span> 两位作者Spence与Rapee均为社交焦虑领域知名研究者</div>
+                <div class="finding-item"><span class="finding-icon">V</span> PMID: 27406470 可验证</div>
+                <div class="finding-item"><span class="finding-icon warn">!</span> 页码有微小差异（66 vs 67），DOI格式有小错误</div>
+            </div>
+        </div>
+
+        <div id="ref23" class="ref-card low">
+            <div class="ref-header">
+                <span class="ref-number">[23]</span>
+                <span class="badge low">LOW</span>
+            </div>
+            <div class="ref-citation">
+                Liu, X., & Wang, Y. (2020). The zhongkao track... <em>Chinese Education & Society</em>, 53(3-4), 127-143.
+            </div>
+            <div class="findings">
+                <h4>验证结果</h4>
+                <div class="finding-item"><span class="finding-icon">V</span> Chinese Education & Society 为Taylor & Francis发行的真实期刊</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 标题在所有数据库中无法匹配</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 页码127-143在Volume 53中未找到</div>
+                <div class="finding-item"><span class="finding-icon fail">X</span> 作者组合"Liu X. + Wang Y."在此期刊2020年无法验证</div>
+            </div>
+            <div class="issues danger">
+                <h4>问题</h4>
+                <p><strong>此引用疑似伪造或严重错误。</strong> 期刊真实，但具体文章无法在任何数据库验证。建议不要使用此参考文献。</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>调研完成时间：2026年7月7日</p>
+            <p>调研方法：数据库交叉验证（CrossRef, OpenAlex, PubMed, CNKI, Springer, APA PsycNet等）</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleDetail(id) {
+            var card = document.getElementById(id);
+            if (card.classList.contains('active')) {
+                card.classList.remove('active');
+            } else {
+                document.querySelectorAll('.ref-card').forEach(function(c) { c.classList.remove('active'); });
+                card.classList.add('active');
+                card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    </script>
+</body>
+</html>
