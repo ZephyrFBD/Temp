@@ -288,7 +288,7 @@ function pwPrompt(cb){if(document.getElementById('pw'))return;var o=el('div','lb
  inp.onkeydown=function(e){if(e.key==='Enter')ok();e.stopPropagation()};
  bar.appendChild(btn('确定',ok));bar.appendChild(btn('先不用 AI',function(){o.remove()},'btn ghost'));b.appendChild(bar);o.appendChild(b);document.body.appendChild(o);setTimeout(function(){inp.focus()},50)}
 function boot(){idbLoad().then(function(){home();if(!AI.key)pwPrompt()})}
-var AI_DEF={key:'',base:'https://api.moonshot.cn/v1',model:'kimi-k3',think:'low'};var AI=Object.assign({},AI_DEF);
+var AI_DEF={key:'',base:'https://api.moonshot.cn/v1',model:'kimi-k2.6',think:'low'};var AI=Object.assign({},AI_DEF);
 try{AI.key=localStorage.getItem('ae1111key')||''}catch(e){}
 function aiSave(){try{localStorage.setItem('ae1111ai',JSON.stringify(AI))}catch(e){}}
 function aiSettings(cb){var o=el('div','lb');o.style.cursor='default';var b=el('div','card');b.style.width='min(520px,92vw)';
