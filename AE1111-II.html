@@ -120,7 +120,7 @@ function records(){
  var h=el('div','card');h.style.marginTop='16px';h.appendChild(el('h3','','测验历史'));
  if(!S.hist.length)h.appendChild(el('p','sub','还没有记录。完成（或交卷）一次测验后会出现在这里。'));
  S.hist.slice().reverse().slice(0,40).forEach(function(x){var d=new Date(x.t);var ds=d.toLocaleDateString()+' '+d.toTimeString().slice(0,5);
-  h.appendChild(el('div','set','<div class="meta"><span><b>'+x.title+'</b></span><span>'+ds+'</span></div><div class="meta"><span>得分 '+x.ok+'/'+x.tot+(x.auto?' · 未检查 '+x.auto+' 题按错计':'')+'</span><span>'+Math.round(100*x.ok/x.tot)+'%</span></div>'))});
+  h.appendChild(el('div','set','<div class="meta"><span><b>'+x.title+'</b></span><span>'+ds+'</span></div><div class="meta"><span>得分 '+x.ok+'/'+x.tot+(x.skip?' · 未作答 '+x.skip+' 题不计分':'')+'</span><span>'+Math.round(100*x.ok/x.tot)+'%</span></div>'))});
  r.appendChild(h);
  var ac=el('div','actions');ac.style.marginTop='16px';
  ac.appendChild(btn('导出记录',exportData,'btn ghost'));
@@ -131,7 +131,7 @@ function records(){
  r.appendChild(ac);window.scrollTo(0,0)}
 function begin(title,items,si){cur={title:title,items:items,i:0,st:{},si:si==null?null:si};render()}
 function startSet(si,mode){var s=D[si];var idx=s.qs.map(function(q,k){return k});if(mode==='rand')idx=shuffle(idx).slice(0,s.pool||10);else if(s.kind!=='Practice')idx=shuffle(idx);
- begin(s.week.replace(/Week (\S+) /,'$1 ')+' · '+s.kind,idx.map(function(k){return {si:si,qi:k}}),mode==='all'&&s.kind!=='Practice'?null:si)}
+ begin(s.week.replace(/Week (\S+) /,'$1 ')+' · '+s.kind,idx.map(function(k){return {si:si,qi:k}}),si)}
 function startWrong(){var it=Object.keys(S.wrong).map(function(k){var p=k.split('.');return {si:+p[0],qi:+p[1]}});begin('错题重练',shuffle(it),null)}
 function startMixed(n){var all=[];D.forEach(function(s,si){s.qs.forEach(function(q,qi){all.push({si:si,qi:qi})})});begin('随机混合',shuffle(all).slice(0,n),null)}
 function opts(oo,st,body,media){
@@ -223,22 +223,31 @@ function render(){
  dock.appendChild(l);dock.appendChild(rr);r.appendChild(dock);
  if(q.t==='dg'){var c=card.querySelector('.drag');var f2=function(){c.style.fontSize=(16*c.clientWidth/q.W)+'px'};f2();window.onresize=f2}
  window.scrollTo(0,y)}
+function answered(j){var s=cur.st[j];if(!s)return false;if(s.checked)return true;
+ if(s.sel&&s.sel.length)return true;
+ if(s.vals&&s.vals.some(function(v){return v&&String(v).trim()}))return true;
+ if(s.place)for(var k in s.place)if(s.place[k]&&s.place[k].length)return true;
+ return false}
 function finish(){
- var N=cur.items.length,auto=0,j;
- if(!cur.done){for(j=0;j<N;j++){var s0=cur.st[j];if(!s0||!s0.checked){grade(j);cur.st[j].auto=1;auto++}}
+ var N=cur.items.length,j;
+ if(!cur.done){var skip=0;
+  for(j=0;j<N;j++){if(!cur.st[j]||!cur.st[j].checked){if(answered(j)){grade(j);cur.st[j].auto=1}else{(cur.st[j]||(cur.st[j]={})).skipped=1;skip++}}}
   var ok0=0;for(j=0;j<N;j++)if(cur.st[j].ok)ok0++;
-  if(cur.si!=null)S.last[cur.si]={ok:ok0,tot:N};
-  S.hist.push({t:Date.now(),title:cur.title,ok:ok0,tot:N,auto:auto});if(S.hist.length>200)S.hist.shift();save();cur.done=1;cur.auto=auto}
- auto=cur.auto||0;
- var r=$('app');r.innerHTML='';var ok=0;for(j=0;j<N;j++)if(cur.st[j]&&cur.st[j].ok)ok++;
- var pc=N?ok/N:0,C=2*Math.PI*80;
+  if(cur.si!=null&&N-skip>0)S.last[cur.si]={ok:ok0,tot:N-skip};
+  if(N-skip>0){S.hist.push({t:Date.now(),title:cur.title,ok:ok0,tot:N-skip,skip:skip});if(S.hist.length>200)S.hist.shift();save()}
+  cur.done=1;cur.skip=skip}
+ var skipN=0,ok=0;for(j=0;j<N;j++){if(cur.st[j]&&cur.st[j].ok)ok++;if(!cur.st[j]||!cur.st[j].checked)skipN++}
+ var G=N-skipN;
+ var r=$('app');r.innerHTML='';
+ var pc=G?ok/G:0,C=2*Math.PI*80;
  var c=el('div','card res');c.appendChild(el('div','eyebrow',cur.title));
- c.appendChild(el('div','ring','<svg width="190" height="190"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7cc4ff"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs><circle cx="95" cy="95" r="80" stroke="rgba(255,255,255,.08)" stroke-width="12" fill="none"/><circle cx="95" cy="95" r="80" stroke="url(#g)" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="'+(C*pc)+' '+C+'"/></svg><div class="c"><b>'+ok+' / '+N+'</b><span>'+Math.round(pc*100)+'%</span></div>'));
- if(auto)c.appendChild(el('p','sub','有 '+auto+' 题未检查，已按错题计入错题本。'));
+ c.appendChild(el('div','ring','<svg width="190" height="190"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7cc4ff"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs><circle cx="95" cy="95" r="80" stroke="rgba(255,255,255,.08)" stroke-width="12" fill="none"/><circle cx="95" cy="95" r="80" stroke="url(#g)" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="'+(C*pc)+' '+C+'"/></svg><div class="c"><b>'+ok+' / '+G+'</b><span>'+(G?Math.round(pc*100)+'%':'—')+'</span></div>'));
+ if(skipN)c.appendChild(el('p','sub','有 '+skipN+' 题未作答，不计分，也不进错题本。'));
  var pills=el('div','pills');for(var k=0;k<N;k++)(function(k){var s2=cur.st[k];var d=el('span','dot'+(s2&&s2.checked?(s2.ok?' good':' bad'):''),String(k+1));d.onclick=function(){cur.i=k;render();window.scrollTo(0,0)};pills.appendChild(d)})(k);c.appendChild(pills);
  var bar=el('div','actions');bar.style.justifyContent='center';bar.appendChild(btn('← 目录',home,'btn ghost'));bar.appendChild(btn('学习记录',records,'btn ghost'));
- var wrong=[];for(var m=0;m<N;m++)if(!(cur.st[m]&&cur.st[m].ok))wrong.push(cur.items[m]);
- if(wrong.length)bar.appendChild(btn('重做未做对的 · '+wrong.length,function(){begin(cur.title+' · 重做',wrong,null)}));
+ var wrong=[],undone=[];for(var m=0;m<N;m++){var s3=cur.st[m];if(s3&&s3.checked){if(!s3.ok)wrong.push(cur.items[m])}else undone.push(cur.items[m])}
+ if(wrong.length)bar.appendChild(btn('重做错题 · '+wrong.length,function(){begin(cur.title+' · 错题',wrong,null)}));
+ if(undone.length)bar.appendChild(btn('做未作答的 · '+undone.length,function(){begin(cur.title+' · 未作答',undone,null)},wrong.length?'btn ghost':'btn'));
  c.appendChild(bar);r.appendChild(c);window.scrollTo(0,0)}
 document.addEventListener('keydown',function(e){
  if(e.key==='Escape'){var o=document.querySelector('.lb');if(o)o.remove();return}
